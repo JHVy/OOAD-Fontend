@@ -26,13 +26,14 @@ export const getMembers = (show = 5, page = 1, query) => (
     .catch(er => console.log(er.response));
 };
 
-export const getSearchMembers = query => dispatch => {
+export const getSearchMembers = query => (dispatch, getState) => {
   let newQuery = "";
   if (query === "") newQuery = "undefined";
   else newQuery = query;
   axios
-    .get(`${process.env.REACT_APP_BACKEND_HOST}/api/member/search/${newQuery}`)
-
+    .get(`${process.env.REACT_APP_BACKEND_HOST}/api/member/search/${newQuery}`,
+      tokenConfig(getState)
+    )
     .then(response =>
       dispatch({ type: GET_SEARCH_MEMBERS, payload: response.data })
     )

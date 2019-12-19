@@ -51,28 +51,28 @@ class StorageReport extends Component {
                 for (let i = 0; i < 7; i++) {
                     data.push({ 'idMaterial': '', 'quantity': 0, 'name': '', 'amt': 2400 });
                 }
-                this.props.storagereport.storagereports.map((el, index) => {
-                    let createddate = new Date(el.createddate);
-                    console.log('crearedate:' + createddate);
-                    console.log('enddate: ' + enddate);
+                let ind = 0;
 
-                    if (el.idMaterial === idMaterial) {
+                (this.props.storagereport.storagereports).map((el) => {
+                    let createddate = new Date(el.createddate);
+
+                    if (el.idMaterial === idMaterial && ind < 7) {
                         if ((createddate > startdate && createddate < enddate) ||
                             (createddate.toDateString() == startdate.toDateString() ||
                                 createddate.toDateString() == enddate.toDateString())) {
-                            // const obj = data.find(i => i.idMaterial = el.idMaterial);
-                            // if (obj) {
-                            //     data[data.indexOf(obj)]["name"] = createddate;
-                            //     data[data.indexOf(obj)]["quantity"] = el.quantity
-                            // }
-                            // else {
-                            data[index]["quantity"] = el.quantity;
-                            data[index]["name"] = this.convertDate(createddate);
-                            //}
-                            //data.push({ 'name': el.createddate, 'quantity': el.quantity, 'amt': 2400 })
+
+                            let obj = data.find(el => el.name === this.convertDate(createddate));
+                            if (obj) {
+                                data[data.indexOf(obj)]["quantity"] = el.quantity;
+                                data[data.indexOf(obj)]["name"] = this.convertDate(createddate);
+                            } else {
+                                data[ind]["quantity"] = el.quantity;
+                                data[ind]["name"] = this.convertDate(createddate);
+                                ind = ind + 1;
+                            }
+
                         }
                     }
-
                 });
 
                 return {
@@ -93,7 +93,7 @@ class StorageReport extends Component {
             materials.map(el => {
                 options.push({ 'value': el._id, 'label': el.name })
             });
-            console.log(materials)
+
             return {
                 options
             }

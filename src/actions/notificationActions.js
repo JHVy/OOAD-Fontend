@@ -24,6 +24,6 @@ export const showNoti = type => dispatch => {
     default:
       break;
   }
-  dispatch({ type: SHOW_NOTI, payload: type })
+  dispatch({ type: SHOW_NOTI })
 };
 

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import MaterialModal from "./MaterialModal";
 import MaterialRow from "./MaterialRow";
 import { connect } from "react-redux";
@@ -6,15 +6,17 @@ import { getMaterials } from "../../../actions/materialActions";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Loader from "react-loader";
 
 const mapStateToProps = state => ({
-  material: state.material
+  materials: state.material.materials,
+  isLoaded: state.material.isLoaded
 });
 
 class Material extends Component {
   state = {
-    sort: [{ value: "10" }, { value: "20" }, { value: "30" }],
-    select: "10",
+    sort: [{ value: "5" }, { value: "10" }, { value: "15" }],
+    select: "5",
     currentPage: 1,
     pages: [],
     totalDocuments: 0,
@@ -38,7 +40,7 @@ class Material extends Component {
     else newQuery = query;
 
     axios
-      .get(`/api/material/count/${newQuery}`)
+      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/material/count/${newQuery}`)
       .then(response => {
         this.setState({ totalDocuments: response.data });
       })
@@ -53,7 +55,7 @@ class Material extends Component {
     else newQuery = query;
 
     axios
-      .get(`/api/material/count/${newQuery}`)
+      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/material/count/${newQuery}`)
       .then(response => {
         let pages = Math.floor(response.data / select);
         let remainder = response.data % select;
@@ -93,7 +95,7 @@ class Material extends Component {
   };
 
   renderMaterials = () => {
-    const { materials } = this.props.material;
+    const { materials } = this.props;
     return materials.map((eachMaterial, index) => (
       <MaterialRow
         history={this.props.history}
@@ -103,6 +105,7 @@ class Material extends Component {
       />
     ));
   };
+
   handleChoosePage = e => {
     this.setState({ currentPage: e }, () => {
       const { select, currentPage, query } = this.state;
@@ -145,7 +148,6 @@ class Material extends Component {
         <a
           className="paga-link"
           name="currentPage"
-          href="true"
           onClick={() => this.handleChoosePage(eachButton.pageNumber)}
         >
           {eachButton.pageNumber}
@@ -156,147 +158,152 @@ class Material extends Component {
 
   render() {
     const { select, totalDocuments } = this.state;
-
+    const { isLoaded } = this.props;
     return (
-      <React.Fragment>
-        {/* Content Header (Page header) */}
-        <section className="content-header">
-          <h1>
-            Category
+      <Fragment>
+        {!isLoaded ? (
+          <Loader></Loader>
+        ) : (
+            <Fragment>
+              {/* Content Header (Page header) */}
+              <section className="content-header">
+                <h1>
+                  Material
             {/* <small>Preview</small> */}
-          </h1>
-          <ol className="breadcrumb">
-            <li>
-              <Link to="/home">
-                <i className="fa fa-dashboard" /> Home
+                </h1>
+                <ol className="breadcrumb">
+                  <li>
+                    <Link to="/home">
+                      <i className="fa fa-dashboard" /> Home
               </Link>
-            </li>
-            <li className="active">Material</li>
-          </ol>
-        </section>
-        {/* Main content */}
-        <section className="content">
-          <div className="row">
-            {/* left column */}
-            <div className="col-md-12">
-              <div className="box">
-                <div className="box-header" style={{ marginTop: "5px" }}>
-                  <div className="col-md-4">
-                    <MaterialModal />
-                  </div>
-                </div>
-                {/* /.box-header */}
-                <div className="box-body">
-                  <div
-                    id="example1_wrapper"
-                    className="dataTables_wrapper form-inline dt-bootstrap"
-                  >
-                    <div className="row">
-                      <div>
-                        <div className="col-sm-6">
-                          <div
-                            className="dataTables_length"
-                            id="example1_length"
-                          >
-                            <label>
-                              Show
+                  </li>
+                  <li className="active">Material</li>
+                </ol>
+              </section>
+              {/* Main content */}
+              <section className="content">
+                <div className="row">
+                  {/* left column */}
+                  <div className="col-md-12">
+                    <div className="box">
+                      <div className="box-header" style={{ marginTop: "5px" }}>
+                        <div className="col-md-4">
+                          <MaterialModal />
+                        </div>
+                      </div>
+                      {/* /.box-header */}
+                      <div className="box-body">
+                        <div
+                          id="example1_wrapper"
+                          className="dataTables_wrapper form-inline dt-bootstrap"
+                        >
+                          <div className="row">
+                            <div>
+                              <div className="col-sm-6">
+                                <div
+                                  className="dataTables_length"
+                                  id="example1_length"
+                                >
+                                  <label>
+                                    Show
                               {this.renderSelect()}
-                              entries
+                                    entries
                             </label>
-                          </div>
-                        </div>
-                        <div className="col-sm-6">
-                          <div
-                            id="example1_filter"
-                            className="dataTables_filter"
-                          >
-                            <label style={{ float: "right" }}>
-                              Search:
+                                </div>
+                              </div>
+                              <div className="col-sm-6">
+                                <div
+                                  id="example1_filter"
+                                  className="dataTables_filter"
+                                >
+                                  <label style={{ float: "right" }}>
+                                    Search:
                               <input
-                                type="search"
-                                name="query"
-                                style={{ margin: "0px 5px" }}
-                                className="form-control input-sm"
-                                placeholder="Find me  "
-                                aria-controls="example1"
-                                onChange={this.handleOnChange}
-                                value={this.state.query}
-                              />
-                            </label>
+                                      type="search"
+                                      name="query"
+                                      style={{ margin: "0px 5px" }}
+                                      className="form-control input-sm"
+                                      placeholder="Find me  "
+                                      aria-controls="example1"
+                                      onChange={this.handleOnChange}
+                                      value={this.state.query}
+                                    />
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <table
+                                id="example1"
+                                className="table table-bordered table-striped"
+                              >
+                                <thead>
+                                  <tr>
+                                    <th style={{ width: "5%" }}>#</th>
+                                    <th style={{ width: "20%" }}>Material</th>
+                                    <th style={{ width: "20%" }}>Quantity</th>
+                                    <th style={{ width: "30%" }}>Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>{this.renderMaterials()}</tbody>
+                                <tfoot>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Action</th>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
+                          </div>
+                          <div className="row">
+                            <div className="col-sm-5">
+                              <div
+                                className="dataTables_info"
+                                id="example1_info"
+                                role="status"
+                                aria-live="polite"
+                              >
+                                Showing 1 to{" "}
+                                {totalDocuments < select ? totalDocuments : select} of{" "}
+                                {totalDocuments} entries
+                        </div>
+                            </div>
+                            <div className="col-sm-7">
+                              <div
+                                className="dataTables_paginate paging_simple_numbers"
+                                id="example1_paginate"
+                              >
+                                <ul className="pagination" style={{ float: "right" }}>
+                                  {this.renderPageButtons()}
+                                </ul>
+                              </div>
+                            </div>
                           </div>
                         </div>
+                        {/*/.col (left) */}
                       </div>
-                    </div>
-
-                    <div className="row">
-                      <div className="col-sm-12">
-                        <table
-                          id="example1"
-                          className="table table-bordered table-striped"
-                        >
-                          <thead>
-                            <tr>
-                              <th style={{ width: "10%" }}>#</th>
-                              <th style={{ width: "20%" }}>Material</th>
-                              <th style={{ width: "20%" }}>Created date</th>
-                              <th style={{ width: "20%" }}>Quantity</th>
-                              <th style={{ width: "30%" }}>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>{this.renderMaterials()}</tbody>
-                          <tfoot>
-                            <tr>
-                              <th>#</th>
-                              <th>Material</th>
-                              <th>Created date</th>
-                              <th>Quantity</th>
-                              <th>Action</th>
-                            </tr>
-                          </tfoot>
-                        </table>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-sm-5">
-                        <div
-                          className="dataTables_info"
-                          id="example1_info"
-                          role="status"
-                          aria-live="polite"
-                        >
-                          Showing 1 to{" "}
-                          {totalDocuments < select ? totalDocuments : select} of{" "}
-                          {totalDocuments} entries
-                        </div>
-                      </div>
-                      <div className="col-sm-7">
-                        <div
-                          className="dataTables_paginate paging_simple_numbers"
-                          id="example1_paginate"
-                        >
-                          <ul className="pagination" style={{ float: "right" }}>
-                            {this.renderPageButtons()}
-                          </ul>
-                        </div>
-                      </div>
+                      {/* /.row */}
                     </div>
                   </div>
-                  {/*/.col (left) */}
                 </div>
-                {/* /.row */}
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* /.content */}
-      </React.Fragment>
+              </section>
+              {/* /.content */}
+            </Fragment>
+          )}
+      </Fragment>
     );
   }
 }
 
 Material.propTypes = {
   getMaterials: PropTypes.func.isRequired,
-  material: PropTypes.object.isRequired
+  materials: PropTypes.array.isRequired,
+  isLoaded: PropTypes.bool.isRequired
 };
 
 export default connect(mapStateToProps, { getMaterials })(Material);

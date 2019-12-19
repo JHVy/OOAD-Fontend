@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-
 import { connect } from "react-redux";
 import { addMaterial } from "../../../actions/materialActions";
+import mongoose from "mongoose";
 
 class MaterialModal extends Component {
   state = {
@@ -19,23 +19,16 @@ class MaterialModal extends Component {
 
     const newItem = {
       name: this.state.name,
-      createAt: Date.now(),
       quantity: Number(
         Math.round(parseFloat(this.state.quantity + "e" + 2)) + "e-" + 2
-      )
+      ),
+      _id: mongoose.Types.ObjectId()
     };
-
+    console.log(newItem._id)
     this.props.addMaterial(newItem);
-    console.log(newItem._id);
-    this.setState({ _id: newItem._id });
+
     // Close modal
     document.getElementById("triggerButton").click();
-
-    //Reload page
-    window.location.reload();
-
-    //Toggle
-    // this.props.toggle();
   };
   handleOnClick = () => {
     // window.location.replace("/category?page=0&id=2");
@@ -104,7 +97,7 @@ class MaterialModal extends Component {
                     type="number"
                     className="form-control"
                     id="quantity"
-                    placeholder="Quantity (ex: 1, 5.54, ...)"
+                    placeholder="Quantity (ex: 1, 30, ...)"
                     name="quantity"
                     onChange={this.onChange}
                   />

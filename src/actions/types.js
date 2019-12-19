@@ -3,6 +3,8 @@ export const GET_CATEGORIES = "GET_CATEGORIES";
 export const UPDATE_CATEGORY = "UPDATE_CATEGORY";
 export const ADD_CATEGORY = "ADD_CATEGORY";
 export const DELETE_CATEGORY = "DELETE_CATEGORY";
+export const GET_ALL_CATEGORIES = "GET_ALL_CATEGORIES";
+
 //Auth
 export const USER_LOADING = "USER_LOADING";
 export const USER_LOADED = "USER_LOADED";
@@ -43,6 +45,8 @@ export const GET_PRODUCTS = "GET_PRODUCTS";
 export const ADD_PRODUCT = "ADD_PRODUCT";
 export const GET_PRODUCT = "GET_PRODUCT";
 export const DELETE_PRODUCT = "DELETE_PRODUCT";
+export const GET_ALL_PRODUCTS = "GET_ALL_PRODUCTS";
+
 //Invoice
 export const GET_INVOICES = "GET_INVOICES";
 export const ADD_INVOICE = "ADD_INVOICE";

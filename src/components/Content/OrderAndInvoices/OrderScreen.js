@@ -105,7 +105,7 @@ class OrderScreen extends Component {
   };
 
   //load len list member
-  onListMemberClick = (selectedMember) => {
+  onListMemberClick = () => {
     this.setState(state => {
       let listSelectMember = [...state.listSelectMember]
       if (this.props.member.members.length === this.state.listSelectMember.length) return;
@@ -114,7 +114,6 @@ class OrderScreen extends Component {
         listSelectMember.push({ 'value': el._id, 'label': el.name + ' - ' + el.phone })
       });
       return {
-        //...state.listSelectMember,
         listSelectMember
       }
     });
@@ -470,6 +469,7 @@ class OrderScreen extends Component {
                             style={{ opacity: 0, height: 0 }}
                             required
                             value={invisibleInpMemVal}
+                            readOnly
                           />
                           <br />
                           <strong><i className="fa fa-sticky-note-o margin-r-5"></i> Notes</strong>
@@ -503,15 +503,14 @@ class OrderScreen extends Component {
 
                             {products.map((eachProduct, index) => (
                               <div key={eachProduct._id} style={menuStyle} className="box-body box-profile">
-                                <img className="profile-user-img img-responsive img-circle" src={eachProduct.linkPic} alt="User profile picture" />
+                                <img className="profile-user-img img-responsive img-circle" src={eachProduct.linkpic} alt="User profile picture" />
                                 <h3 className="profile-username text-center">{eachProduct.name}</h3>
                                 <p className="text-muted text-center">{eachProduct.price} VND</p>
 
-                                <a href="javascript:void(0);" className="btn btn-primary btn-block"
+                                <a className="btn btn-primary btn-block"
                                   onClick={() => this.handleAddToOrder(eachProduct)}>
-                                  <b>
-                                    Add to order
-                              </b></a>
+                                  <b>Add to order </b>
+                                </a>
                               </div>
                             ))}
 
@@ -574,7 +573,7 @@ class OrderScreen extends Component {
                                     </thead>
                                     <tbody style={{ display: "block", overflow: "auto", height: "200px" }}>
                                       {members.map((eachMember, index) => (
-                                        <tr>
+                                        <tr key={eachMember._id}>
                                           <td style={{ width: "6%" }}>{index + 1}</td>
                                           <td style={{ width: "20%" }}>{eachMember.name}</td>
                                           <td style={{ width: "15%" }}>{eachMember.phone}</td>
@@ -634,6 +633,7 @@ const mapStateToProps = state => ({
   member: state.member,
   invoice: state.invoice,
   isLoaded: state.member.isLoaded,
+  user: state.auth.user
 });
 
 export default connect(
