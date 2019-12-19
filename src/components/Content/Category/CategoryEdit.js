@@ -5,6 +5,7 @@ import { pushHistory } from "../../../actions/historyActions";
 import Loader from "react-loader";
 import axios from "axios";
 import { updateCategory } from "../../../actions/categoryActions";
+import { Link } from "react-router-dom";
 
 class CategoryEdit extends Component {
   state = {
@@ -14,7 +15,10 @@ class CategoryEdit extends Component {
   componentDidMount() {
     const { id } = this.props.match.params;
     axios
-      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/category/${id}`, this.tokenConfig(this.props.auth.token))
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/category/${id}`,
+        this.tokenConfig(this.props.auth.token)
+      )
       .then(response => {
         this.setState({ name: response.data.name, _id: response.data._id });
       })
@@ -71,106 +75,104 @@ class CategoryEdit extends Component {
         {!_id ? (
           <Loader></Loader>
         ) : (
-            <Fragment>
-              {/* Content Header (Page header) */}
-              <section className="content-header">
-                <h1>
-                  Category
+          <Fragment>
+            {/* Content Header (Page header) */}
+            <section className="content-header">
+              <h1>
+                Category
                 {/* <small>Preview</small> */}
-                </h1>
-                <ol className="breadcrumb">
-                  <li>
-                    <a href="fake_url">
-                      <i className="fa fa-dashboard" /> Home
-                  </a>
-                  </li>
-                  <li>
-                    <a href="fake_url">Category</a>
-                  </li>
-                  <li>
-                    <a href="fake_url">Edit</a>
-                  </li>
-                </ol>
-              </section>
-              {/* Main content */}
-              <section className="content">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="box box-info">
-                      <div className="box-header with-border">
-                        <h3 className="box-title">Horizontal Form</h3>
-                      </div>
-                      {/* /.box-header */}
-                      {/* form start */}
-                      <form
-                        className="form-horizontal"
-                        onSubmit={this.handleSubmit}
-                      >
-                        <div className="box-body">
-                          <div className="form-group">
-                            <label
-                              htmlFor="inputEmail3"
-                              className="col-sm-2 control-label"
-                            >
-                              ID
-                          </label>
-                            <div className="col-sm-10">
-                              <input
-                                name="_id"
-                                type="text"
-                                id="inputEmail3"
-                                placeholder="Loading..."
-                                className="form-control"
-                                value={_id}
-                                disabled
-                                onChange={this.handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="form-group">
-                            <label
-                              htmlFor="inputPassword3"
-                              className="col-sm-2 control-label"
-                            >
-                              Name
-                          </label>
-                            <div className="col-sm-10">
-                              <input
-                                name="name"
-                                type="text"
-                                className="form-control"
-                                id="inputName"
-                                placeholder="Loading..."
-                                value={name}
-                                onChange={this.handleChange}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        {/* /.box-body */}
-                        <div className="box-footer">
-                          <button
-                            type="button"
-                            onClick={this.handleCancel}
-                            className="btn btn-default"
-                          >
-                            Cancel
-                        </button>
-                          <button
-                            type="submit"
-                            className="btn btn-info pull-right"
-                          >
-                            Save
-                        </button>
-                        </div>
-                        {/* /.box-footer */}
-                      </form>
+              </h1>
+              <ol className="breadcrumb">
+                <li>
+                  <Link to="/home">
+                    <i className="fa fa-dashboard" /> Home
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/category">Category</Link>
+                </li>
+                <li className="active">Edit</li>
+              </ol>
+            </section>
+            {/* Main content */}
+            <section className="content">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="box box-info">
+                    <div className="box-header with-border">
+                      <h3 className="box-title">Edit category</h3>
                     </div>
+                    {/* /.box-header */}
+                    {/* form start */}
+                    <form
+                      className="form-horizontal"
+                      onSubmit={this.handleSubmit}
+                    >
+                      <div className="box-body">
+                        <div className="form-group">
+                          <label
+                            htmlFor="inputEmail3"
+                            className="col-sm-2 control-label"
+                          >
+                            ID
+                          </label>
+                          <div className="col-sm-10">
+                            <input
+                              name="_id"
+                              type="text"
+                              id="inputEmail3"
+                              placeholder="Loading..."
+                              className="form-control"
+                              value={_id}
+                              disabled
+                              onChange={this.handleChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label
+                            htmlFor="inputPassword3"
+                            className="col-sm-2 control-label"
+                          >
+                            Name
+                          </label>
+                          <div className="col-sm-10">
+                            <input
+                              name="name"
+                              type="text"
+                              className="form-control"
+                              id="inputName"
+                              placeholder="Loading..."
+                              value={name}
+                              onChange={this.handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* /.box-body */}
+                      <div className="box-footer">
+                        <button
+                          type="button"
+                          onClick={this.handleCancel}
+                          className="btn btn-default"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn btn-info pull-right"
+                        >
+                          Save
+                        </button>
+                      </div>
+                      {/* /.box-footer */}
+                    </form>
                   </div>
                 </div>
-              </section>
-            </Fragment>
-          )}
+              </div>
+            </section>
+          </Fragment>
+        )}
       </Fragment>
     );
   }

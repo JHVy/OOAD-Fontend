@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-export default class Menu extends Component {
+import { connect } from "react-redux";
+
+class Menu extends Component {
   render() {
+    const { username } = this.props.user;
     return (
       <div>
         {/* Left side column. contains the logo and sidebar */}
@@ -19,7 +22,7 @@ export default class Menu extends Component {
                 />
               </div>
               <div className="pull-left info">
-                <p>Alexander Pierce</p>
+                <p>{username}</p>
                 <a href="fake_url">
                   <i className="fa fa-circle text-success" /> Online
                 </a>
@@ -98,6 +101,14 @@ export default class Menu extends Component {
               <li>
                 <Link to="/invoice">
                   <i className="fa fa-th" /> <span>Invoice</span>
+                  <span className="pull-right-container">
+                    <small className="label pull-right bg-green">new</small>
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/user">
+                  <i className="fa fa-th" /> <span>User</span>
                   <span className="pull-right-container">
                     <small className="label pull-right bg-green">new</small>
                   </span>
@@ -370,3 +381,9 @@ export default class Menu extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  user: state.auth.user
+});
+
+export default connect(mapStateToProps, null)(Menu);

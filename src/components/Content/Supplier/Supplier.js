@@ -6,6 +6,7 @@ import { getSuppliers } from "../../../actions/supplierActions";
 import PropTypes from "prop-types";
 import axios from "axios";
 import Loader from "react-loader";
+import { Link } from "react-router-dom";
 
 const mapStateToProps = state => ({
   suppliers: state.supplier.suppliers,
@@ -171,13 +172,11 @@ class Supplier extends Component {
               </h1>
               <ol className="breadcrumb">
                 <li>
-                  <a href="fake_url">
+                  <Link to="/home">
                     <i className="fa fa-dashboard" /> Home
-                  </a>
+                  </Link>
                 </li>
-                <li>
-                  <a href="fake_url">Supplier</a>
-                </li>
+                <li className="active">Supplier</li>
               </ol>
             </section>
             {/* Main content */}
@@ -187,11 +186,10 @@ class Supplier extends Component {
                 <div className="col-md-12">
                   <div className="box">
                     <div className="box-header" style={{ marginTop: "5px" }}>
-                      <div style={{ paddingLeft: "5px" }} className="col-md-8">
-                        <h3 className="box-title">
-                          Data Table With Full Features
-                        </h3>
-                      </div>
+                      <div
+                        style={{ paddingLeft: "5px" }}
+                        className="col-md-8"
+                      ></div>
 
                       <div className="col-md-4">
                         <SupplierModal />
@@ -331,7 +329,7 @@ class Supplier extends Component {
 
 Supplier.propTypes = {
   getSuppliers: PropTypes.func.isRequired,
-  supplier: PropTypes.object.isRequired,
+  suppliers: PropTypes.array.isRequired,
   isLoaded: PropTypes.bool.isRequired
 };
 

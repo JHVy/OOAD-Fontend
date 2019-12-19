@@ -10,13 +10,11 @@ export default class NoPermissionPage extends Component {
             <h1>403 Forbidden or No Permission to Access</h1>
             <ol className="breadcrumb">
               <li>
-                <a href="#">
+                <Link to="/home">
                   <i className="fa fa-dashboard" /> Home
-                </a>
+                </Link>
               </li>
-              <li>
-                <a href="#">Examples</a>
-              </li>
+
               <li className="active">403 error</li>
             </ol>
           </section>

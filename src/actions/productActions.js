@@ -39,7 +39,8 @@ export const deleteProduct = id => (dispatch, getState) => {
         type: DELETE_PRODUCT,
         payload: response.data
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const addProduct = newProduct => (dispatch, getState) => {
@@ -54,5 +55,6 @@ export const addProduct = newProduct => (dispatch, getState) => {
         type: ADD_PRODUCT,
         payload: newProduct
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };

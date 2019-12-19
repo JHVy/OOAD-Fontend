@@ -2,8 +2,12 @@ import React, { Fragment, Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { showNoti } from "../../../actions/notificationActions";
-import 'react-notifications/lib/notifications.css';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import "react-notifications/lib/notifications.css";
+import {
+  NotificationContainer,
+  NotificationManager
+} from "react-notifications";
+import { Link } from "react-router-dom";
 
 class PaySlipEdit extends Component {
   state = {
@@ -12,13 +16,13 @@ class PaySlipEdit extends Component {
     createddate: new Date(),
     totalAmt: 0,
     _id: "",
-    notiType: "",
+    notiType: ""
   };
 
   createNotification = () => {
     const { notiType } = this.state;
     this.props.showNoti(notiType);
-    this.setState({ notiType: '' });
+    this.setState({ notiType: "" });
   };
 
   componentDidMount() {
@@ -46,7 +50,7 @@ class PaySlipEdit extends Component {
   handleSubmit = e => {
     const { _id, idMember, idSupplier, createddate, totalAmt } = this.state;
     e.preventDefault();
-    let notiType = '';
+    let notiType = "";
     const newPaySlip = {
       idMember,
       idSupplier,
@@ -59,22 +63,24 @@ class PaySlipEdit extends Component {
       .put(`/api/payslip/${_id}`, newPaySlip)
 
       .then(response => {
-
         if (response.status === 200) {
-          this.setState({ notiType: 'success' });
+          this.setState({ notiType: "success" });
 
-          setTimeout(function () { //Start the timer
-            window.location.replace("/payslip");
-          }.bind(this), 500)
+          setTimeout(
+            function() {
+              //Start the timer
+              window.location.replace("/payslip");
+            }.bind(this),
+            500
+          );
         }
 
         console.log(response.data);
       })
       .catch(error => {
-        this.setState({ notiType: 'failure' });
+        this.setState({ notiType: "failure" });
         console.log(error.response);
       });
-
   };
 
   handleCancel = e => {
@@ -85,9 +91,7 @@ class PaySlipEdit extends Component {
 
     return (
       <Fragment>
-        {this.state.notiType !== "" ? (
-          this.createNotification()
-        ) : null}
+        {this.state.notiType !== "" ? this.createNotification() : null}
         <NotificationContainer />
 
         {/* Content Header (Page header) */}
@@ -98,16 +102,14 @@ class PaySlipEdit extends Component {
           </h1>
           <ol className="breadcrumb">
             <li>
-              <a href="fake_url">
+              <Link to="/home">
                 <i className="fa fa-dashboard" /> Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="fake_url">Pay Slip</a>
+              <Link to="/payslip">Payslip</Link>
             </li>
-            <li>
-              <a href="fake_url">Edit</a>
-            </li>
+            <li className="active">Edit</li>
           </ol>
         </section>
         {/* Main content */}
@@ -227,8 +229,5 @@ class PaySlipEdit extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-});
-export default connect(
-  mapStateToProps, { showNoti }
-)(PaySlipEdit);
+const mapStateToProps = state => ({});
+export default connect(mapStateToProps, { showNoti })(PaySlipEdit);

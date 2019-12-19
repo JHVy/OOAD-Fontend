@@ -1,30 +1,58 @@
 import React, { Fragment, Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import { deleteUser } from "../../../actions/userActions";
+import { updateUser } from "../../../actions/userActions";
 import { pushHistory } from "../../../actions/historyActions";
+import { Link } from "react-router-dom";
+import UserChangePassModal from "./UserChangePassModal";
 
+const mapStateToProps = state => ({
+  history: state.history.history,
+  auth: state.auth
+});
 class UserEdit extends Component {
   state = {
     idRole: "",
+    nameRole: "",
     username: "",
     fullName: "",
     phoneNumber: "",
     address: "",
     _id: "",
-    curPassword: "",
-    newPassword: "",
-    reNewPassword: "",
-    changingPassword: false,
     inputErrors: false,
-    curPassError: false
-  };
 
+    options: []
+  };
+  tokenConfig = token => {
+    const config = {
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+
+    //Header
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+
+    return config;
+  };
   componentDidMount() {
     const { id } = this.props.match.params;
-
     axios
-      .get(`/api/user/${id}`)
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/role/getall/role`,
+        this.tokenConfig(this.props.auth.token)
+      )
+      .then(response => {
+        this.setState({ options: response.data });
+      })
+      .catch(er => console.log(er.response));
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/user/${id}`,
+        this.tokenConfig(this.props.auth.token)
+      )
       .then(response => {
         if (response.data === null) this.props.pushHistory("/404");
         else {
@@ -37,7 +65,8 @@ class UserEdit extends Component {
             _id
           } = response.data;
           this.setState({
-            idRole,
+            idRole: idRole._id,
+            nameRole: idRole.name,
             username,
             fullName,
             phoneNumber,
@@ -51,68 +80,31 @@ class UserEdit extends Component {
       });
   }
 
-  validatePassword(password) {
-    return new RegExp(/^[a-zA-Z0-9]+$/).test(password);
-  }
-
-  validateInputPassword() {
-    const { newPassword, reNewPassword } = this.state;
-    const inputErrors = newPassword === reNewPassword ? false : true;
-    this.setState({ inputErrors }, () => this.render());
-  }
-
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value, inputErrors: false }, () =>
-      this.validateInputPassword()
-    );
+    this.setState({ [e.target.name]: e.target.value });
   };
 
   handleSubmit = e => {
     const {
       idRole,
+      nameRole,
       username,
       fullName,
       phoneNumber,
       address,
-      changingPassword,
       _id
     } = this.state;
+    const user = {
+      idRole,
+      username,
+      fullName,
+      phoneNumber,
+      address,
+      _id
+    };
+
     e.preventDefault();
-
-    var newUser;
-
-    if (changingPassword) {
-      const password = this.state.newPassword;
-      newUser = {
-        idRole,
-        username,
-        fullName,
-        phoneNumber,
-        address,
-        password,
-        _id
-      };
-      console.log("Changed pass");
-    } else {
-      newUser = {
-        idRole,
-        username,
-        fullName,
-        phoneNumber,
-        address,
-        _id
-      };
-      console.log("Not changed pass");
-    }
-    axios
-      .put(`/api/user/${_id}`, newUser)
-
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error.response);
-      });
+    this.props.updateUser(user);
     //Quay về trang chính
     this.props.history.push("/user");
   };
@@ -121,29 +113,12 @@ class UserEdit extends Component {
     this.props.history.push("/user");
   };
 
-  handleChangePass = e => {
-    const { username, curPassword, _id } = this.state;
-    e.preventDefault();
-    const userChangePass = {
-      username,
-      curPassword,
-      _id
-    };
-    console.log("TCL: UserEdit -> userCurPass", userChangePass);
-
-    axios
-      .post(`/api/user/cp/${_id}`, userChangePass)
-      .then(response => {
-        console.log(response);
-        if (response.status === 200) this.setState({ changingPassword: true });
-        else this.setState({ curPassError: true, inputErrors: true });
-      })
-      .catch(error => {
-        console.log(error.response);
-      });
-
-    //close Modal
-    //document.getElementById("triggerButton").click();
+  handleSelectChange = event => {
+    let index = event.nativeEvent.target.selectedIndex;
+    this.setState({
+      idRole: event.target.value,
+      nameRole: event.nativeEvent.target[index].text
+    });
   };
 
   render() {
@@ -154,10 +129,9 @@ class UserEdit extends Component {
       phoneNumber,
       address,
       _id,
-      newPassword
+      newPassword,
+      options
     } = this.state;
-
-    console.log("changingPass " + this.state.changingPassword);
 
     return (
       <Fragment>
@@ -169,16 +143,14 @@ class UserEdit extends Component {
           </h1>
           <ol className="breadcrumb">
             <li>
-              <a href="/">
+              <Link to="/home">
                 <i className="fa fa-dashboard" /> Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/user">User</a>
+              <Link to="/user">User</Link>
             </li>
-            <li>
-              <a href="fake_url">Edit</a>
-            </li>
+            <li className="active">Edit</li>
           </ol>
         </section>
         {/* Main content */}
@@ -204,24 +176,26 @@ class UserEdit extends Component {
                           className="form-control"
                           defaultValue={_id}
                           disabled
-                          //onChange={this.handleChange}
                         />
                       </div>
                     </div>
                     <div className="form-group">
-                      <label className="col-sm-2 control-label">ID Role</label>
+                      <label className="col-sm-2 control-label">Role</label>
                       <div className="col-sm-10">
-                        <input
-                          name="idRole"
-                          type="text"
-                          className="form-control"
-                          id="userIdRole"
-                          placeholder="Loading..."
+                        <select
                           value={idRole}
-                          onChange={this.handleChange}
-                        />
+                          onChange={this.handleSelectChange}
+                          className="form-control"
+                        >
+                          {options.map(eachOption => (
+                            <option key={eachOption._id} value={eachOption._id}>
+                              {eachOption.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
+
                     <div className="form-group">
                       <label className="col-sm-2 control-label">Username</label>
                       <div className="col-sm-10">
@@ -299,137 +273,7 @@ class UserEdit extends Component {
                     >
                       Save
                     </button>
-                    <button
-                      type="button"
-                      id="triggerChangePassButton"
-                      style={{ float: "right" }}
-                      className="btn btn-info"
-                      data-toggle="modal"
-                      data-target="#exampleModalCenter"
-                      onClick={this.handleOnClick}
-                    >
-                      Change Password
-                    </button>
-
-                    {/* Dialog change Password */}
-                    <div
-                      className="modal fade"
-                      id="exampleModalCenter"
-                      tabIndex={-1}
-                      role="dialog"
-                      aria-labelledby="exampleModalCenterTitle"
-                      aria-hidden="true"
-                    >
-                      <div
-                        className="modal-dialog modal-dialog-centered"
-                        role="document"
-                      >
-                        <div className="modal-content">
-                          <div className="modal-header">
-                            <span>
-                              <h3
-                                className="modal-title"
-                                id="exampleModalLongTitle"
-                              >
-                                Change Password
-                              </h3>
-                            </span>
-                            <span>
-                              <button
-                                type="button"
-                                className="close"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                              >
-                                <span aria-hidden="true">×</span>
-                              </button>
-                            </span>
-                          </div>
-                          <div className="modal-body">
-                            <div className="form-group">
-                              <label className="col-form-label">ID:</label>
-                              <input
-                                name="_id"
-                                type="text"
-                                id="userIDModal"
-                                placeholder="Loading..."
-                                className="form-control"
-                                defaultValue={_id}
-                                disabled
-                              />
-                              <label className="col-form-label">
-                                Username:
-                              </label>
-                              <input
-                                name="username"
-                                type="text"
-                                id="userUsernameModal"
-                                placeholder="Loading..."
-                                className="form-control"
-                                value={username}
-                                disabled
-                              />
-                              <label className="col-form-label">
-                                Current Password:
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control"
-                                id="userCurPassword"
-                                //placeholder="Loading"
-                                name="curPassword"
-                                onChange={this.handleChange}
-                              />
-                              {this.state.curPassError && (
-                                <p className="text-red">
-                                  Wrong current password
-                                </p>
-                              )}
-                              <label className="col-form-label">
-                                New Password:
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control"
-                                id="userNewPassword"
-                                value={newPassword}
-                                name="newPassword"
-                                onChange={this.handleChange}
-                              />
-                              <label className="col-form-label">
-                                Re-enter new Password:
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control"
-                                id="userReNewPassword"
-                                //placeholder="Loading"
-                                name="reNewPassword"
-                                onChange={this.handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="modal-footer">
-                            <button
-                              type="button"
-                              className="btn btn-secondary"
-                              data-dismiss="modal"
-                            >
-                              Close
-                            </button>
-                            <button
-                              type="button"
-                              onClick={this.handleChangePass}
-                              className="btn btn-primary"
-                              disabled={this.state.inputErrors}
-                              //data-dismiss="modal"
-                            >
-                              Change
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <UserChangePassModal _id={_id} username={username} />
                   </div>
                   {/* /.box-footer */}
                 </form>
@@ -441,7 +285,4 @@ class UserEdit extends Component {
     );
   }
 }
-const mapStateToProps = state => ({
-  history: state.history.history
-});
-export default connect(mapStateToProps, { deleteUser, pushHistory })(UserEdit);
+export default connect(mapStateToProps, { updateUser, pushHistory })(UserEdit);

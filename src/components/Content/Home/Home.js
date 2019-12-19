@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import { Link } from "react-router-dom";
 
 class Home extends Component {
   state = {};
@@ -14,9 +15,9 @@ class Home extends Component {
             </h1>
             <ol className="breadcrumb">
               <li>
-                <a href="xd">
+                <Link to="/home">
                   <i className="fa fa-dashboard" /> Home
-                </a>
+                </Link>
               </li>
               <li className="active">Dashboard</li>
             </ol>

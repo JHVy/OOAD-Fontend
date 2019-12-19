@@ -136,7 +136,7 @@ class MemberModal extends Component {
                   </span>
                 </div>
                 <div className="modal-body">
-                  {this.state.msg != "" ? (
+                  {this.state.msg !== "" ? (
                     <div className="alert alert-danger alert-dismissible">
                       {this.state.msg}
                     </div>

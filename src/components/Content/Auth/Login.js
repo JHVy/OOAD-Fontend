@@ -5,6 +5,12 @@ import { pushHistory } from "../../../actions/historyActions";
 
 import PropTypes from "prop-types";
 
+const mapStateToProps = state => ({
+  error: state.error,
+  history: state.history,
+  isAuthenticated: state.auth.isAuthenticated
+});
+
 class Login extends Component {
   state = {
     username: "",
@@ -63,7 +69,7 @@ class Login extends Component {
     if (name === "username" && !isPassed)
       msg = "Username can contain only letters, numbers and underscores";
     if (name === "password" && !isPassed)
-      msg = "Password must contain only letters numbers";
+      msg = "Password must contain only letters and numbers";
 
     if (value === "") msg = "";
     this.setState({ [name]: value, msg, inputErrors });
@@ -165,10 +171,4 @@ class Login extends Component {
     );
   }
 }
-const mapStateToProps = state => ({
-  error: state.error,
-  history: state.history,
-  isAuthenticated: state.auth.isAuthenticated
-});
-
 export default connect(mapStateToProps, { login, pushHistory })(Login);

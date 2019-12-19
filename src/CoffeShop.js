@@ -141,6 +141,50 @@ class CoffeShop extends Component {
                     ></PrivateRoute>
                     <PrivateRoute
                       exact
+                      path="/material"
+                      component={Material}
+                      role={roles.material}
+                    ></PrivateRoute>
+
+                    <PrivateRoute
+                      exact
+                      path="/payslip"
+                      component={PaySlip}
+                      role={roles.payslip}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/user"
+                      component={User}
+                      role={roles.user}
+                      token={token}
+                    />
+
+                    <PrivateRoute
+                      exact
+                      path="/invoice"
+                      component={Invoice}
+                      role={roles.invoice}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/material/edit/:id"
+                      component={MaterialEdit}
+                      role={roles.material}
+                      token={token}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/user/edit/:id"
+                      component={UserEdit}
+                      role={roles.user}
+                      token={token}
+                    />
+
+                    <PrivateRoute
+                      exact
                       path="/role/edit/:id"
                       component={RoleEdit}
                       role={roles.role}
@@ -153,15 +197,6 @@ class CoffeShop extends Component {
                       role={roles.category}
                       token={token}
                     ></PrivateRoute>
-                    <Route exact path="/material" component={Material}></Route>
-                    <Route
-                      exact
-                      path="/material/edit/:id"
-                      component={MaterialEdit}
-                    />
-                    <Route exact path="/user" component={User}></Route>
-                    <Route exact path="/user/edit/:id" component={UserEdit} />
-
                     <PrivateRoute
                       exact
                       path="/supplier/edit/:id"
@@ -178,23 +213,9 @@ class CoffeShop extends Component {
                     ></PrivateRoute>
                     <PrivateRoute
                       exact
-                      path="/payslip"
-                      component={PaySlip}
-                      role={roles.payslip}
-                      token={token}
-                    ></PrivateRoute>
-                    <PrivateRoute
-                      exact
                       path="/payslip/edit/:id"
                       component={PaySlipEdit}
                       role={roles.payslip}
-                      token={token}
-                    ></PrivateRoute>
-                    <PrivateRoute
-                      exact
-                      path="/invoice"
-                      component={Invoice}
-                      role={roles.invoice}
                       token={token}
                     ></PrivateRoute>
                     <PrivateRoute
@@ -205,16 +226,20 @@ class CoffeShop extends Component {
                       token={token}
                     ></PrivateRoute>
 
-                    <Route
+                    <PrivateRoute
                       exact
                       path="/dailycheck"
                       component={DailyCheck}
-                    ></Route>
-                    <Route
+                      role={roles.material}
+                      token={token}
+                    />
+                    <PrivateRoute
                       exact
                       path="/storageReport"
                       component={StorageReport}
-                    ></Route>
+                      role={roles.material}
+                      token={token}
+                    />
                     <Route
                       exact
                       path="/orderScreen"

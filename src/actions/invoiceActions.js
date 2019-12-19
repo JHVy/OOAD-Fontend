@@ -38,7 +38,8 @@ export const deleteInvoice = id => (dispatch, getState) => {
         type: DELETE_INVOICE,
         payload: response.data
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const addInvoice = newInvoice => (dispatch, getState) => {
@@ -54,7 +55,8 @@ export const addInvoice = newInvoice => (dispatch, getState) => {
         payload: newInvoice,
         response: response.status
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const updateInvoice = newInvoice => (dispatch, getState) => {

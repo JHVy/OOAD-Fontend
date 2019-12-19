@@ -13,19 +13,18 @@ class UserRow extends Component {
   };
   render() {
     const { user, index } = this.props;
-
+    const { idRole, username, phoneNumber, address, _id } = user;
     return (
       <tr>
         <td>{index + 1}</td>
-        <td>{user.idRole}</td>
+        <td>{idRole.name}</td>
         <td>{user.username}</td>
-        <td>{user.fullName}</td>
         <td>{user.phoneNumber}</td>
-        <td>{user.address}</td>
+        {/* <td>{user.address}</td> */}
         <td>
           <div className="btn-group">
             <button
-              onClick={() => this.handleEdit(user._id)}
+              onClick={() => this.handleEdit(_id)}
               type="button"
               className="btn btn-success"
             >
@@ -33,7 +32,7 @@ class UserRow extends Component {
             </button>
 
             <button
-              onClick={() => this.handleDelete(user._id)}
+              onClick={() => this.handleDelete(_id)}
               type="button"
               className="btn btn-danger"
             >
@@ -46,7 +45,4 @@ class UserRow extends Component {
   }
 }
 
-export default connect(
-  null,
-  { deleteUser, pushHistory }
-)(UserRow);
+export default connect(null, { deleteUser, pushHistory })(UserRow);

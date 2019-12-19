@@ -1,5 +1,6 @@
 import React, { Fragment, Component } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 class MaterialEdit extends Component {
   state = {
@@ -72,16 +73,14 @@ class MaterialEdit extends Component {
           </h1>
           <ol className="breadcrumb">
             <li>
-              <a href="fake_url">
+              <Link to="/home">
                 <i className="fa fa-dashboard" /> Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="fake_url">Material</a>
+              <Link to="/material">Material</Link>
             </li>
-            <li>
-              <a href="fake_url">Edit</a>
-            </li>
+            <li className="active">Edit</li>
           </ol>
         </section>
         {/* Main content */}

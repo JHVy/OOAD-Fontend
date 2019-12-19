@@ -3,14 +3,14 @@ import {
   ADD_USER,
   DELETE_USER,
   GET_USER,
-  USERS_LOADING,
-  CHECK_CUR_PASS_USER
+  CHECK_CUR_PASS_USER,
+  UPDATE_USER
 } from "../actions/types";
 
 const initialState = {
   users: [],
 
-  loading: false
+  isLoaded: false
 };
 
 export default function(state = initialState, action) {
@@ -19,7 +19,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         users: action.payload,
-        loading: false
+        isLoaded: true
       };
     case DELETE_USER:
       return {
@@ -33,17 +33,15 @@ export default function(state = initialState, action) {
         ...state,
         users: [action.payload, ...state.users]
       };
-    case USERS_LOADING:
-      return {
-        ...state,
-        loading: true
-      };
-    default:
-      return state;
+
     case CHECK_CUR_PASS_USER:
       return {
         ...state,
         checkCurPass: true
+      };
+    case UPDATE_USER:
+      return {
+        ...state
       };
     default:
       return state;

@@ -3,6 +3,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { pushHistory } from "../../../actions/historyActions";
 import { updateRole } from "../../../actions/roleActions";
+import { Link } from "react-router-dom";
 
 class RoleEdit extends Component {
   state = {
@@ -263,16 +264,14 @@ class RoleEdit extends Component {
           </h1>
           <ol className="breadcrumb">
             <li>
-              <a href="fake_url">
+              <Link to="/home">
                 <i className="fa fa-dashboard" /> Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="fake_url">Role</a>
+              <Link to="/role">Role</Link>
             </li>
-            <li>
-              <a href="fake_url">Edit</a>
-            </li>
+            <li className="active">Edit</li>
           </ol>
         </section>
         {/* Main content */}
@@ -281,7 +280,7 @@ class RoleEdit extends Component {
             <div className="col-md-6">
               <div className="box box-info">
                 <div className="box-header with-border">
-                  <h3 className="box-title">Horizontal Form</h3>
+                  <h3 className="box-title">Edit role</h3>
                 </div>
                 {/* /.box-header */}
                 {/* form start */}

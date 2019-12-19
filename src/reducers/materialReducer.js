@@ -3,7 +3,6 @@ import {
   GET_ALL_MATERIALS,
   ADD_MATERIAL,
   DELETE_MATERIAL,
-  MATERIALS_LOADING,
   UPDATE_MATERIAL,
   UPDATE_QTY_MATERIAL
 } from "../actions/types";
@@ -51,11 +50,6 @@ export default function(state = initialState, action) {
         ...state
       };
 
-    case MATERIALS_LOADING:
-      return {
-        ...state,
-        isLoaded: true
-      };
     default:
       return state;
   }

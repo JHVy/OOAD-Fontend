@@ -50,7 +50,8 @@ export const deleteMember = id => (dispatch, getState) => {
         type: DELETE_MEMBER,
         payload: response.data
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const addMember = newMember => (dispatch, getState) => {
@@ -70,7 +71,8 @@ export const addMember = newMember => (dispatch, getState) => {
         payload: newMember,
         response: response.status
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const updateMember = newMember => (dispatch, getState) => {

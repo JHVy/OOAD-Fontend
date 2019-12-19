@@ -15,6 +15,7 @@ import notificationReducer from "./notificationReducer";
 import supplierReducer from "./supplierReducer";
 import storageReportReducer from "./storageReportReducer";
 import invoicedetReducer from "./invoicedetReducer";
+import userReducer from "./userReducer";
 
 export default combineReducers({
   category: categoryReducer,
@@ -30,5 +31,6 @@ export default combineReducers({
   material: materialReducer,
   showNoti: notificationReducer,
   supplier: supplierReducer,
-  storagereport: storageReportReducer
+  storagereport: storageReportReducer,
+  user: userReducer
 });

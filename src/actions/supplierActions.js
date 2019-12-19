@@ -39,7 +39,8 @@ export const deleteSupplier = id => (dispatch, getState) => {
         type: DELETE_SUPPLIER,
         payload: response.data
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const addSupplier = newSupplier => (dispatch, getState) => {
@@ -57,7 +58,8 @@ export const addSupplier = newSupplier => (dispatch, getState) => {
         type: ADD_SUPPLIER,
         payload: newSupplier
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const updateSupplier = newSupplier => (dispatch, getState) => {

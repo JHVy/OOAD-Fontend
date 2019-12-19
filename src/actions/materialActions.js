@@ -2,7 +2,6 @@ import {
   GET_MATERIALS,
   ADD_MATERIAL,
   DELETE_MATERIAL,
-  MATERIALS_LOADING,
   GET_ALL_MATERIALS,
   UPDATE_MATERIAL,
   UPDATE_QTY_MATERIAL
@@ -41,12 +40,15 @@ export const getAllMaterials = query => (dispatch, getState) => {
 };
 
 export const deleteMaterial = id => (dispatch, getState) => {
-  axios.delete(`/api/material/${id}`, tokenConfig(getState)).then(response => {
-    dispatch({
-      type: DELETE_MATERIAL,
-      payload: response.data
-    });
-  });
+  axios
+    .delete(`/api/material/${id}`, tokenConfig(getState))
+    .then(response => {
+      dispatch({
+        type: DELETE_MATERIAL,
+        payload: response.data
+      });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const addMaterial = newMaterial => (dispatch, getState) => {

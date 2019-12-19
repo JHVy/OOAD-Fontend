@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 export default class ErrorPage extends Component {
   render() {
@@ -10,12 +11,9 @@ export default class ErrorPage extends Component {
           <h1>404 Error Page</h1>
           <ol className="breadcrumb">
             <li>
-              <a href="fake_url">
+              <Link to="/home">
                 <i className="fa fa-dashboard" /> Home
-              </a>
-            </li>
-            <li>
-              <a href="fake_url">Examples</a>
+              </Link>
             </li>
             <li className="active">404 error</li>
           </ol>

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { connect } from "react-redux";
 import { addRole } from "../../../actions/roleActions";
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const initialState = {
   name: "",
@@ -270,6 +270,7 @@ class RoleModal extends Component {
                     className="close"
                     data-dismiss="modal"
                     aria-label="Close"
+                    onClick={this.onCancel}
                   >
                     <span aria-hidden="true">×</span>
                   </button>

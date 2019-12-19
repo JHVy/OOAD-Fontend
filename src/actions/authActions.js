@@ -23,12 +23,15 @@ export const loadUser = () => (dispatch, getState) => {
       `${process.env.REACT_APP_BACKEND_HOST}/api/auth/user`,
       tokenConfig(getState)
     )
-    .then(res =>
-      dispatch({
-        type: USER_LOADED,
-        payload: res.data
-      })
-    )
+    .then(res => {
+      if (res.data === null) {
+        dispatch({ type: AUTH_ERROR });
+      } else
+        dispatch({
+          type: USER_LOADED,
+          payload: res.data
+        });
+    })
     .catch(er => {
       dispatch(returnErrors(er.response.data, er.response.status));
       dispatch({

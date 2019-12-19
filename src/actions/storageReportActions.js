@@ -56,7 +56,8 @@ export const deleteStorageReport = id => (dispatch, getState) => {
         type: DELETE_REPORT,
         payload: response.data
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };
 
 export const addStorageReport = newItem => (dispatch, getState) => {
@@ -78,5 +79,6 @@ export const addStorageReport = newItem => (dispatch, getState) => {
         payload: newItem,
         response: response.status
       });
-    });
+    })
+    .catch(er => console.log(er.response));
 };

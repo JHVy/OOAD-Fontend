@@ -12,6 +12,7 @@ import {
 import Loader from "react-loader";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const mapStateToProps = state => ({
   payslips: state.payslip,
@@ -166,13 +167,11 @@ class PaySlip extends Component {
               </h1>
               <ol className="breadcrumb">
                 <li>
-                  <a href="fake_url">
+                  <Link to="/home">
                     <i className="fa fa-dashboard" /> Home
-                  </a>
+                  </Link>
                 </li>
-                <li>
-                  <a href="fake_url">Pay Slip</a>
-                </li>
+                <li className="active">Payslip</li>
               </ol>
             </section>
             {/* Main content */}
@@ -182,11 +181,10 @@ class PaySlip extends Component {
                 <div className="col-md-12">
                   <div className="box">
                     <div className="box-header" style={{ marginTop: "5px" }}>
-                      <div style={{ paddingLeft: "5px" }} className="col-md-8">
-                        <h3 className="box-title">
-                          Data Table With Full Features
-                        </h3>
-                      </div>
+                      <div
+                        style={{ paddingLeft: "5px" }}
+                        className="col-md-8"
+                      ></div>
 
                       <div className="col-md-4">
                         <PaySlipModal />
