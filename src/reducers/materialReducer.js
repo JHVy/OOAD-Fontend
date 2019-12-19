@@ -13,7 +13,7 @@ const initialState = {
   isLoaded: false
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case GET_MATERIALS:
       return {
@@ -21,12 +21,13 @@ export default function(state = initialState, action) {
         materials: action.payload,
         isLoaded: true
       };
+
     case GET_ALL_MATERIALS:
       return {
         ...state,
         materials: action.payload,
-        isLoaded: true
       };
+
     case DELETE_MATERIAL:
       return {
         ...state,

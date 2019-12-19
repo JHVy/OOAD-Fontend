@@ -2,12 +2,13 @@ import {
   GET_CATEGORIES,
   ADD_CATEGORY,
   DELETE_CATEGORY,
-  UPDATE_CATEGORY
+  UPDATE_CATEGORY,
+  GET_ALL_CATEGORIES
 } from "./types";
 import axios from "axios";
 import { tokenConfig } from "./authActions";
-
 import mongoose from "mongoose";
+
 export const getCategories = (show = 5, page = 1, query) => (
   dispatch,
   getState
@@ -24,6 +25,22 @@ export const getCategories = (show = 5, page = 1, query) => (
 
     .then(response =>
       dispatch({ type: GET_CATEGORIES, payload: response.data })
+    )
+    .catch(er => console.log(er.response));
+};
+
+export const getAllCategories = query => (dispatch, getState) => {
+  let newQuery = "";
+  if (query === "") newQuery = "undefined";
+  else newQuery = query;
+
+  axios
+    .get(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/category/getall/${newQuery}`,
+      tokenConfig(getState)
+    )
+    .then(response =>
+      dispatch({ type: GET_ALL_CATEGORIES, payload: response.data })
     )
     .catch(er => console.log(er.response));
 };

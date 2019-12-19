@@ -11,7 +11,7 @@ export default function (state = initialState, action) {
     case SHOW_NOTI:
       return {
         ...state,
-        type: action.payload,
+        //type: action.payload,
       };
 
     default:

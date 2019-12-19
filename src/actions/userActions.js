@@ -18,7 +18,7 @@ export const getUsers = (show = 5, page = 1, query) => (dispatch, getState) => {
     .catch(er => console.log(er.response));
 };
 
-export const deleteUser = id => dispatch => {
+export const deleteUser = id => (dispatch, getState) => {
   axios
     .delete(
       `${process.env.REACT_APP_BACKEND_HOST}/api/user/${id}`,
@@ -32,7 +32,7 @@ export const deleteUser = id => dispatch => {
     });
 };
 
-export const addUser = newUser => dispatch => {
+export const addUser = newUser => (dispatch, getState) => {
   axios
     .post(
       `${process.env.REACT_APP_BACKEND_HOST}/api/user/`,

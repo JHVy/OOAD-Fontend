@@ -1,42 +1,58 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import { addMember, getMembers } from "../../../actions/memberActions";
+import { addProduct, getProducts } from "../../../actions/productActions";
 import { addInvoice } from "../../../actions/invoiceActions";
+import { getAllCategories } from "../../../actions/categoryActions";
 import { showNoti } from "../../../actions/notificationActions";
 import "react-notifications/lib/notifications.css";
-import {
-  NotificationContainer,
-  NotificationManager
-} from "react-notifications";
+import { NotificationContainer } from "react-notifications";
+import Select from "react-select";
 import PropTypes from "prop-types";
-
 import mongoose from "mongoose";
 
-class MemberModal extends Component {
+class ProductModal extends Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
   state = {
     name: "",
-    phone: "",
-    point: 0,
+    idCategory: "",
+    price: 0,
+    linkpic: '',
+    status: 1,
     _id: "",
     msg: "",
-    notiType: ""
+    notiType: "",
+    listCate: [],
+    listStatus: [{ label: 'Inactive', value: 0 }, { label: 'Available', value: 1 }],
+    selectedStatus: 1,
   };
 
+  handleClick = () => {
+    this.upload.click()
+  }
+
+  componentDidMount() {
+    this.props.getAllCategories('');
+  }
+
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.member.members !== this.props.member.members) {
+    if (prevProps.product.products !== this.props.product.products) {
       if (this.props.isLoaded === false) {
         return;
       }
 
       if (
-        this.props.member.type === "DELETE_MEMBER" ||
-        this.props.member.type === "GET_MEMBERS" ||
-        this.props.member.type === "GET_SEARCH_MEMBERS"
+        this.props.product.type === "DELETE_PRODUCT" ||
+        this.props.product.type === "GET_PRODUCTS" ||
+        this.props.product.type === "GET_SEARCH_PRODUCTS"
       ) {
         return;
       }
 
-      if (this.props.member.response === 200) {
+      if (this.props.product.response === 200) {
         this.setState({ notiType: "success" });
       } else {
         this.setState({ notiType: "failure" });
@@ -44,17 +60,16 @@ class MemberModal extends Component {
     }
   }
   onChange = e => {
-    //this.setState({ [e.target.name]: e.target.value });
+
     const { name, value } = e.target;
     let msg = "";
 
-    //Validation
-    const isPassed = this.validatePhone(value);
-    //const inputErrors = isPassed ? false : true;
+    // //Validation
+    // const isPassed = this.validatePhone(value);
 
-    if (!isPassed && name === "phone") {
-      msg = "Phone can only contain numbers and spaces";
-    }
+    // if (!isPassed && name === "phone") {
+    //   msg = "Phone can only contain numbers and spaces";
+    // }
     this.setState({ [name]: value, msg: msg });
   };
 
@@ -65,32 +80,63 @@ class MemberModal extends Component {
   onSubmit = e => {
     e.preventDefault();
     const newItem = {
+      idCategory: this.state.idCategory,
       name: this.state.name,
-      phone: this.state.phone,
-      point: 0,
-      createAt: new Date(),
+      price: this.state.price,
+      linkpic: this.state.linkpic,
+      status: this.state.status,
       _id: mongoose.Types.ObjectId()
     };
 
-    this.props.addMember(newItem);
-    this.setState({ name: "", phone: "" });
+    this.props.addProduct(newItem);
+    this.setState({ name: "", price: "" });
 
     // Close modal
     document.getElementById("triggerButton").click();
   };
-
   onCancel = e => {
     this.setState({ name: "", phone: "" });
   };
-
   createNotification = () => {
     const { notiType } = this.state;
     this.props.showNoti(notiType);
     this.setState({ notiType: "" });
   };
 
+  onChangeSelectedCate = idCategory => {
+    this.setState({ idCategory: idCategory.value })
+  }
+
+  onChangeSelectedStatus = status => {
+    this.setState({ status: status.value })
+  }
+
+  onMenuOpen = () => {
+    this.setState(state => {
+      let listCate = [...state.listCate]
+      if (this.props.category.categories.length === this.state.listCate.length) return;
+      else listCate = [];
+
+      this.props.category.categories.map(el => {
+        listCate.push({ 'value': el._id, 'label': el.name })
+      });
+
+      return {
+        listCate
+      }
+    });
+  }
+
+  onChangeFile(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    var file = event.target.files[0];
+    this.setState({ linkpic: '../../dist/img/' + file.name });
+  }
+
   render() {
-    const { notiType, name, phone, point } = this.state;
+    const { notiType, name, price, linkpic, listCate, listStatus } = this.state;
+
     return (
       <Fragment>
         {notiType !== "" ? this.createNotification() : null}
@@ -106,7 +152,7 @@ class MemberModal extends Component {
           data-target="#exampleModalCenter"
           onClick={this.handleOnClick}
         >
-          Add new member
+          Add new product
         </button>
         {/* Modal */}
         <form onSubmit={this.onSubmit}>
@@ -123,7 +169,7 @@ class MemberModal extends Component {
                 <div className="modal-header">
                   <span>
                     <h3 className="modal-title" id="exampleModalLongTitle">
-                      Add new Member
+                      Add new Product
                     </h3>
                   </span>
                   <span>
@@ -151,7 +197,7 @@ class MemberModal extends Component {
                       type="text"
                       className="form-control"
                       id="name"
-                      placeholder="Add member"
+                      placeholder="Add product"
                       name="name"
                       onChange={this.onChange}
                       value={name}
@@ -160,33 +206,51 @@ class MemberModal extends Component {
                   </div>
                   <div className="form-group">
                     <label htmlFor="recipient-name" className="col-form-label">
-                      Phone:
+                      Category:
+                    </label>
+                    <Select
+                      name="idCategory"
+                      onMenuOpen={this.onMenuOpen}
+                      onChange={this.onChangeSelectedCate}
+                      isSearchable={true}
+                      options={listCate}>
+                    </Select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="recipient-name" className="col-form-label">
+                      Price:
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="form-control"
-                      id="phone"
-                      placeholder="Add phone"
-                      name="phone"
+                      placeholder="Add price"
+                      name="price"
                       onChange={this.onChange}
-                      value={phone}
+                      value={price}
                       required
                     />
                   </div>
                   <div className="form-group">
                     <label htmlFor="recipient-name" className="col-form-label">
-                      Point:
+                      Chosse picture:
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="point"
-                      value={point}
-                      //placeholder="Add point"
-                      name="point"
-                      disabled={true}
-                      onChange={this.onChange}
+                    <input id="myInput"
+                      type="file"
+                      ref={(ref) => this.upload = "ref"}
+                      onChange={this.onChangeFile.bind(this)}
                     />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="recipient-name" className="col-form-label">
+                      Status:
+                    </label>
+                    <Select
+                      name="status"
+                      onChange={this.onChangeSelectedStatus}
+                      isSearchable={true}
+                      options={listStatus}>
+                    </Select>
+
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -203,7 +267,7 @@ class MemberModal extends Component {
                     //onClick={this.onSubmit}
                     className="btn btn-primary"
                   >
-                    Add member
+                    Add product
                   </button>
                 </div>
               </div>
@@ -215,16 +279,20 @@ class MemberModal extends Component {
   }
 }
 
-MemberModal.propTypes = {
+ProductModal.propTypes = {
   showNoti: PropTypes.func.isRequired
 };
+
 const mapStateToProps = state => ({
-  member: state.member,
-  isLoaded: state.member.isLoaded
+  product: state.product,
+  category: state.category,
+  isLoaded: state.product.isLoaded
 });
+
 export default connect(mapStateToProps, {
-  addMember,
-  getMembers,
+  addProduct,
+  getProducts,
   addInvoice,
+  getAllCategories,
   showNoti
-})(MemberModal);
+})(ProductModal);

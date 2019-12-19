@@ -2,13 +2,13 @@ import {
   GET_MATERIALS,
   ADD_MATERIAL,
   DELETE_MATERIAL,
-  MATERIALS_LOADING,
   GET_ALL_MATERIALS,
   UPDATE_MATERIAL,
   UPDATE_QTY_MATERIAL
 } from "./types";
 import axios from "axios";
 import { tokenConfig } from "./authActions";
+import mongoose from "mongoose";
 
 export const getMaterials = (show = 10, page = 1, query) => (
   dispatch,
@@ -18,8 +18,7 @@ export const getMaterials = (show = 10, page = 1, query) => (
   if (query === "") newQuery = "undefined";
   else newQuery = query;
   axios
-    .get(`/api/material/${show}/${page}/${newQuery}`, tokenConfig(getState))
-
+    .get(`${process.env.REACT_APP_BACKEND_HOST}/api/material/${show}/${page}/${newQuery}`, tokenConfig(getState))
     .then(response => dispatch({ type: GET_MATERIALS, payload: response.data }))
     .catch(er => console.log(er.response));
 };
@@ -41,7 +40,7 @@ export const getAllMaterials = query => (dispatch, getState) => {
 };
 
 export const deleteMaterial = id => (dispatch, getState) => {
-  axios.delete(`/api/material/${id}`, tokenConfig(getState)).then(response => {
+  axios.delete(`${process.env.REACT_APP_BACKEND_HOST}/api/material/${id}`, tokenConfig(getState)).then(response => {
     dispatch({
       type: DELETE_MATERIAL,
       payload: response.data
@@ -51,14 +50,18 @@ export const deleteMaterial = id => (dispatch, getState) => {
 
 export const addMaterial = newMaterial => (dispatch, getState) => {
   axios
-    .post("/api/material/", newMaterial, tokenConfig(getState))
+    .post(`${process.env.REACT_APP_BACKEND_HOST}/api/material/`, newMaterial, tokenConfig(getState))
     .then(response => {
+      if (newMaterial._id instanceof mongoose.Types.ObjectId) {
+        newMaterial._id = newMaterial._id.toString();
+      }
+
       dispatch({
         type: ADD_MATERIAL,
-        payload: newMaterial
+        payload: newMaterial,
+        response: response.status
       });
-    })
-    .catch(er => console.log(er.response));
+    });
 };
 
 export const updateMaterial = newMaterial => (dispatch, getState) => {

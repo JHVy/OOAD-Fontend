@@ -67,6 +67,7 @@ class InvoiceRow extends Component {
               onClick={() => this.handleInactive(Invoice._id)}
               type="button"
               className="btn btn-danger"
+              disabled={Invoice.status}
             >
               Inactive
             </button>

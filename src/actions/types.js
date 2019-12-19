@@ -2,6 +2,7 @@ export const GET_CATEGORIES = "GET_CATEGORIES";
 export const UPDATE_CATEGORY = "UPDATE_CATEGORY";
 export const ADD_CATEGORY = "ADD_CATEGORY";
 export const DELETE_CATEGORY = "DELETE_CATEGORY";
+export const GET_ALL_CATEGORIES = "GET_ALL_CATEGORIES";
 
 export const USER_LOADING = "USER_LOADING";
 export const USER_LOADED = "USER_LOADED";
@@ -38,6 +39,7 @@ export const GET_PRODUCTS = "GET_PRODUCTS";
 export const ADD_PRODUCT = "ADD_PRODUCT";
 export const GET_PRODUCT = "GET_PRODUCT";
 export const DELETE_PRODUCT = "DELETE_PRODUCT";
+export const GET_ALL_PRODUCTS = "GET_ALL_PRODUCTS";
 
 export const GET_INVOICES = "GET_INVOICES";
 export const ADD_INVOICE = "ADD_INVOICE";
@@ -51,8 +53,6 @@ export const GET_INVOICEDETS = "GET_INVOICEDETS";
 export const ADD_INVOICEDET = "ADD_INVOICEDET";
 export const GET_ALL_INVOICEDETS = "GET_ALL_INVOICEDETS";
 export const INVOICEDETS_LOADING = "INVOICEDETS_LOADING";
-
-export const SHOW_NOTI = "SHOW_NOTI";
 
 export const SHOW_NOTI = "SHOW_NOTI";
 
@@ -74,9 +74,6 @@ export const ADD_MATERIAL = "ADD_MATERIAL";
 export const DELETE_MATERIAL = "DELETE_MATERIAL";
 export const MATERIALS_LOADING = "MATERIALS_LOADING";
 
-export const GET_USERS = "GET_USERS";
-export const ADD_USER = "ADD_USER";
-export const DELETE_USER = "DELETE_USER";
 
 export const CHECK_CUR_PASS_USER = "CHECK_CUR_PASS_USER";
 export const GET_ALL_MATERIALS = " GET_ALL_MATERIALS";

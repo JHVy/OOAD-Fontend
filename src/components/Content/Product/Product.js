@@ -1,18 +1,18 @@
 import React, { Component, Fragment } from "react";
-import CategoryModal from "./CategoryModal";
-import CategoryRow from "./CategoryRow";
+import ProductModal from "./ProductModal";
+import ProductRow from "./ProductRow";
 import { connect } from "react-redux";
-import { getCategories } from "../../../actions/categoryActions";
+import { getProducts, deleteProduct } from "../../../actions/productActions";
 import PropTypes from "prop-types";
 import axios from "axios";
 import Loader from "react-loader";
 
 const mapStateToProps = state => ({
-  categories: state.category.categories,
-  isLoaded: state.category.isLoaded
+  product: state.product,
+  isLoaded: state.product.isLoaded
 });
 
-class Category extends Component {
+class Product extends Component {
   state = {
     sort: [{ value: "5" }, { value: "10" }, { value: "20" }],
     select: "5",
@@ -22,31 +22,24 @@ class Category extends Component {
     query: ""
   };
 
-  resetState = () => {
-    this.setState({ select: "5", currentPage: 1, query: "" });
-  };
   componentDidMount() {
     const { select, currentPage, query } = this.state;
     this.getTotalDocuments();
-
     this.getPages();
-
-    this.props.getCategories(select, currentPage, query);
+    this.props.getProducts(select, currentPage, query);
   }
 
   getTotalDocuments = () => {
     const { query } = this.state;
-
     let newQuery = "";
     if (query === "") newQuery = "undefined";
     else newQuery = query;
 
     axios
-      .get(
-        `${process.env.REACT_APP_BACKEND_HOST}/api/category/count/${newQuery}`
-      )
+      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/product/count/${newQuery}`)
       .then(response => {
         this.setState({ totalDocuments: response.data });
+        console.log(response.data);
       })
       .catch(er => {
         console.log(er.response);
@@ -60,9 +53,7 @@ class Category extends Component {
     else newQuery = query;
 
     axios
-      .get(
-        `${process.env.REACT_APP_BACKEND_HOST}/api/category/count/${newQuery}`
-      )
+      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/product/count/${newQuery}`)
       .then(response => {
         let pages = Math.floor(response.data / select);
         let remainder = response.data % select;
@@ -81,64 +72,19 @@ class Category extends Component {
   };
 
   handleOnChange = e => {
-    console.log(typeof e.target.name + " " + e.target.name);
-    e.persist();
     this.setState({ [e.target.name]: e.target.value }, () => {
-      if (e.target.name === "query") {
-        this.setState({ currentPage: 1 }, () => {
-          this.rerenderPage();
-        });
-      } else {
-        this.rerenderPage();
-      }
+      const { select, currentPage, query } = this.state;
+      this.props.getProducts(select, currentPage, query);
+      this.getPages();
+      this.getTotalDocuments();
     });
   };
 
-  rerenderPage = () => {
-    const { select, currentPage, query } = this.state;
-    this.props.getCategories(select, currentPage, query);
-    this.getPages();
-    this.getTotalDocuments();
-  };
-
-  renderCategories = () => {
-    const { categories } = this.props;
-    return categories.map((eachCategory, index) => (
-      <CategoryRow
-        history={this.props.history}
-        key={eachCategory._id}
-        category={eachCategory}
-        index={index}
-      // deleteCategory={this.props.deleteCategory}
-      />
-    ));
-  };
   handleChoosePage = e => {
-
     this.setState({ currentPage: e }, () => {
       const { select, currentPage, query } = this.state;
-      this.props.getCategories(select, currentPage, query);
+      this.props.getProducts(select, currentPage, query);
     });
-  };
-
-  renderSelect = () => {
-    const { sort, select } = this.state;
-    return (
-      <select
-        onChange={this.handleOnChange}
-        name="select"
-        aria-controls="example1"
-        style={{ margin: "0px 5px" }}
-        className="form-control input-sm"
-        value={select}
-      >
-        {sort.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.value}
-          </option>
-        ))}
-      </select>
-    );
   };
 
   renderPageButtons = () => {
@@ -154,10 +100,11 @@ class Category extends Component {
         }
       >
         <a
-          className="paga-link"
           name="currentPage"
-
           onClick={() => this.handleChoosePage(eachButton.pageNumber)}
+          aria-controls="example1"
+          data-dt-idx={eachButton.pageNumber}
+          tabIndex={0}
         >
           {eachButton.pageNumber}
         </a>
@@ -166,18 +113,20 @@ class Category extends Component {
   };
 
   render() {
+    const { products } = this.props.product;
     const { select, totalDocuments } = this.state;
     const { isLoaded } = this.props;
+
     return (
       <Fragment>
         {!isLoaded ? (
           <Loader></Loader>
         ) : (
-            <Fragment>
+            <React.Fragment>
               {/* Content Header (Page header) */}
               <section className="content-header">
                 <h1>
-                  Category
+                  Product
                 {/* <small>Preview</small> */}
                 </h1>
                 <ol className="breadcrumb">
@@ -187,7 +136,7 @@ class Category extends Component {
                   </a>
                   </li>
                   <li>
-                    <a href="fake_url">Category</a>
+                    <a href="fake_url">Product</a>
                   </li>
                 </ol>
               </section>
@@ -199,11 +148,13 @@ class Category extends Component {
                     <div className="box">
                       <div className="box-header" style={{ marginTop: "5px" }}>
                         <div style={{ paddingLeft: "5px" }} className="col-md-8">
-
+                          <h3 className="box-title">
+                            Data Table With Full Features
+                        </h3>
                         </div>
 
                         <div className="col-md-4">
-                          <CategoryModal />
+                          <ProductModal />
                         </div>
                       </div>
                       {/* /.box-header */}
@@ -221,7 +172,23 @@ class Category extends Component {
                                 >
                                   <label>
                                     Show
-                                  {this.renderSelect()}
+                                  <select
+                                      onChange={this.handleOnChange}
+                                      name="select"
+                                      aria-controls="example1"
+                                      style={{ margin: "0px 5px" }}
+                                      className="form-control input-sm"
+                                      value={this.state.select}
+                                    >
+                                      {this.state.sort.map(option => (
+                                        <option
+                                          key={option.value}
+                                          value={option.value}
+                                        >
+                                          {option.value}
+                                        </option>
+                                      ))}
+                                    </select>
                                     entries
                                 </label>
                                 </div>
@@ -257,20 +224,34 @@ class Category extends Component {
                               >
                                 <thead>
                                   <tr>
-                                    <th style={{ width: "10%" }}>#</th>
-                                    <th style={{ width: "20%" }}>Category</th>
-                                    <th style={{ width: "20%" }}>Created date</th>
-                                    <th style={{ width: "20%" }}>Creator</th>
-                                    <th style={{ width: "30%" }}>Action</th>
+                                    <th style={{ width: "5%" }}>#</th>
+                                    <th style={{ width: "20%" }}>Product</th>
+                                    <th style={{ width: "15%" }}>Category</th>
+                                    <th style={{ width: "15%" }}>Price</th>
+                                    <th style={{ width: "15%" }}>Status</th>
+                                    <th style={{ width: "40%" }}>Action</th>
                                   </tr>
                                 </thead>
-                                <tbody>{this.renderCategories()}</tbody>
+                                <tbody>
+                                  {products.map((el, index) => (
+                                    <ProductRow
+                                      onHandler={this.handler}
+                                      history={this.props.history}
+                                      key={el._id}
+                                      product={el}
+                                      index={index}
+                                      isLoaded={isLoaded}
+                                    // deleteCategory={this.props.deleteCategory}
+                                    />
+                                  ))}
+                                </tbody>
                                 <tfoot>
                                   <tr>
                                     <th>#</th>
+                                    <th>Product</th>
                                     <th>Category</th>
-                                    <th>Created date</th>
-                                    <th>Creator</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                   </tr>
                                 </tfoot>
@@ -311,17 +292,16 @@ class Category extends Component {
                 </div>
               </section>
               {/* /.content */}
-            </Fragment>
+            </React.Fragment>
           )}
       </Fragment>
     );
   }
 }
 
-Category.propTypes = {
-  getCategories: PropTypes.func.isRequired,
-  categories: PropTypes.array.isRequired,
-  isLoaded: PropTypes.bool.isRequired
+Product.propTypes = {
+  getProducts: PropTypes.func.isRequired,
+  product: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, { getCategories })(Category);
+export default connect(mapStateToProps, { getProducts, deleteProduct })(Product);

@@ -29,13 +29,13 @@ export const getStorageReports = (show = 5, page = 1, query) => (
     .catch(er => console.log(er.response));
 };
 
-export const getSearchStorageReports = query => dispatch => {
+export const getSearchStorageReports = query => (dispatch, getState) => {
   let newQuery = "";
   if (query === "") newQuery = "undefined";
   else newQuery = query;
   axios
     .get(
-      `${process.env.REACT_APP_BACKEND_HOST}/api/storagereport/search/${newQuery}`
+      `${process.env.REACT_APP_BACKEND_HOST}/api/storagereport/search/${newQuery}`, tokenConfig(getState)
     )
 
     .then(response =>

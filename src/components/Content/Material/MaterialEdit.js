@@ -1,5 +1,7 @@
 import React, { Fragment, Component } from "react";
 import axios from "axios";
+import { connect } from "react-redux";
+import { showNoti } from "../../../actions/notificationActions";
 
 class MaterialEdit extends Component {
   state = {
@@ -9,11 +11,11 @@ class MaterialEdit extends Component {
   };
   componentDidMount() {
     const { id } = this.props.match.params;
-    console.log(id);
+
     axios
-      .get(`/api/material/${id}`)
+      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/material/${id}`,
+        this.tokenConfig(this.props.auth.token))
       .then(response => {
-        console.log(response.data);
         if (!response.data) this.props.history.push("/404");
         else {
           const { name, quantity, _id } = response.data;
@@ -28,6 +30,19 @@ class MaterialEdit extends Component {
         console.log(error.response);
       });
   }
+  tokenConfig = token => {
+    const config = {
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+    //Header
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+
+    return config;
+  };
   handleChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -42,7 +57,8 @@ class MaterialEdit extends Component {
     };
 
     axios
-      .put(`/api/material/${_id}`, newMaterial)
+      .put(`${process.env.REACT_APP_BACKEND_HOST}/api/material/${_id}`, newMaterial,
+        this.tokenConfig(this.props.auth.token))
 
       .then(response => {
         console.log(response.data);
@@ -169,4 +185,9 @@ class MaterialEdit extends Component {
   }
 }
 
-export default MaterialEdit;
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  };
+};
+export default connect(mapStateToProps, { showNoti })(MaterialEdit);
