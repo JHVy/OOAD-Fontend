@@ -40,9 +40,9 @@ class OrderScreen extends Component {
     notiType: ""
   };
 
-  onChangeSelectedUser = selectedUser => {
-    this.setState({ invisibleInpUserVal: selectedUser.value });
-  };
+  // onChangeSelectedUser = selectedUser => {
+  //   this.setState({ invisibleInpUserVal: selectedUser.value });
+  // };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     let { isLoaded, member, invoice } = this.props;
@@ -68,13 +68,13 @@ class OrderScreen extends Component {
             this.props.addInvoiceDet(newInvoiceDet);
           });
 
-          // setTimeout(
-          //   function() {
-          //     //Start the timer
-          //     window.location.reload();
-          //   }.bind(this),
-          //   500
-          // );
+          setTimeout(
+            function () {
+              //Start the timer
+              window.location.reload();
+            }.bind(this),
+            500
+          );
         } else {
           this.setState({ notiType: "failure" });
         }
@@ -137,7 +137,7 @@ class OrderScreen extends Component {
     this.setState(state => {
       let listOrder = [...state.listOrder];
 
-      listOrder.map(function(el, index) {
+      listOrder.map(function (el, index) {
         if (productDet._id === el._id) {
           //thêm món đã có sẵn trong order -> tăng qty
           const tempObj = {
@@ -171,7 +171,7 @@ class OrderScreen extends Component {
     this.setState(state => {
       let listOrder = [...state.listOrder];
 
-      listOrder.map(function(el, index) {
+      listOrder.map(function (el, index) {
         if (productDet._id === el._id) {
           //thêm món đã có sẵn trong order -> tăng qty
           const tempObj = {
@@ -219,7 +219,7 @@ class OrderScreen extends Component {
       let totalTmp =
         state.total -
         this.state.listOrder[index].price *
-          this.state.listOrder[index].orderQty;
+        this.state.listOrder[index].orderQty;
       this.setState({ total: totalTmp });
 
       let listOrder = [...state.listOrder];
@@ -235,7 +235,7 @@ class OrderScreen extends Component {
     e.preventDefault();
     const newInvoice = {
       idMember: this.state.selectedMember.value,
-      idUser: this.state.selectedUser.value,
+      idUser: this.props.user._id,
       totalAmt: this.state.total,
       createddate: new Date(),
       comments: this.state.comments,
@@ -269,6 +269,7 @@ class OrderScreen extends Component {
     this.props.getProducts(select, currentPage, query);
     //this.props.getMembers(select, currentPage, query);
     this.props.getSearchMembers("");
+
   }
 
   getTotalDocuments = () => {
@@ -408,100 +409,109 @@ class OrderScreen extends Component {
       listSelectMember,
       total
     } = this.state;
+
     return (
       <Fragment>
         {!isLoaded ? (
           <Loader></Loader>
         ) : (
-          <React.Fragment>
-            {this.state.notiType !== "" ? this.createNotification() : null}
-            <NotificationContainer />
+            <React.Fragment>
+              {this.state.notiType !== "" ? this.createNotification() : null}
+              <NotificationContainer />
 
-            {/* Content Header (Page header) */}
-            <section className="content-header">
-              <h1>
-                Order
+              {/* Content Header (Page header) */}
+              <section className="content-header">
+                <h1>
+                  Order
                 {/* <small>Preview</small> */}
-              </h1>
-              <ol className="breadcrumb">
-                <li>
-                  <a href="fake_url">
-                    <i className="fa fa-dashboard" /> Home
+                </h1>
+                <ol className="breadcrumb">
+                  <li>
+                    <a href="fake_url">
+                      <i className="fa fa-dashboard" /> Home
                   </a>
-                </li>
-                <li>
-                  <a href="fake_url">Order</a>
-                </li>
-              </ol>
-            </section>
-            {/* Main content */}
+                  </li>
+                  <li>
+                    <a href="fake_url">Order</a>
+                  </li>
+                </ol>
+              </section>
+              {/* Main content */}
 
-            <section className="content">
-              <div className="row">
-                <form onSubmit={this.onSubmit}>
-                  <div className="col-md-3">
-                    {/* Profile Image */}
-                    <div className="box box-primary">
-                      <div className="box-body box-profile">
-                        <h3 className="profile-username text-center">Order</h3>
+              <section className="content">
+                <div className="row">
+                  <form onSubmit={this.onSubmit}>
+                    <div className="col-md-3">
+                      {/* Profile Image */}
+                      <div className="box box-primary">
+                        <div className="box-body box-profile">
+                          <h3 className="profile-username text-center">Order</h3>
 
-                        <p className="text-muted text-center">
-                          {this.convertDate(new Date())}
-                        </p>
+                          <p className="text-muted text-center">
+                            {this.convertDate(new Date())}
+                          </p>
 
-                        <ul className="list-group list-group-unbordered">
-                          {listOrder.map((eachProduct, index) => (
-                            <li key={eachProduct._id} className="list-group-item">
-                              <a
-                                style={{ cursor: "pointer" }}
-                                onClick={() => this.removeItem(index)}
-                                className="fa fa-trash-o"
-                              ></a>
-                              <b> {eachProduct.name} </b>x{" "}
-                              <input
-                                style={{ border: "none", width: "50px" }}
-                                type="number"
-                                value={eachProduct.orderQty}
-                                onChange={e =>
-                                  this.handleInputQtyChange(e, eachProduct)
-                                }
-                              />
-                              <a className="pull-right">
-                                {eachProduct.price * eachProduct.orderQty}
-                              </a>
+                          <ul className="list-group list-group-unbordered">
+                            {listOrder.map((eachProduct, index) => (
+                              <li key={eachProduct._id} className="list-group-item">
+                                <a
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => this.removeItem(index)}
+                                  className="fa fa-trash-o"
+                                ></a>
+                                <b> {eachProduct.name} </b>x{" "}
+                                <input
+                                  style={{ border: "none", width: "50px" }}
+                                  type="number"
+                                  value={eachProduct.orderQty}
+                                  onChange={e =>
+                                    this.handleInputQtyChange(e, eachProduct)
+                                  }
+                                />
+                                <a className="pull-right">
+                                  {eachProduct.price * eachProduct.orderQty}
+                                </a>
+                              </li>
+                            ))}
+                            <li className="list-group-item">
+                              <b>Total </b>
+                              <a className="pull-right">{total}</a>
                             </li>
-                          ))}
-                          <li className="list-group-item">
-                            <b>Total </b>
-                            <a className="pull-right">{total}</a>
-                          </li>
-                        </ul>
+                          </ul>
 
-                        <button
-                          className="btn btn-primary btn-block"
-                          type="submit"
-                        >
-                          <b>Order</b>
-                        </button>
+                          <button
+                            className="btn btn-primary btn-block"
+                            type="submit"
+                          >
+                            <b>Order</b>
+                          </button>
+                        </div>
+                        {/* /.box-body */}
                       </div>
-                      {/* /.box-body */}
-                    </div>
-                    {/* /.box */}
+                      {/* /.box */}
 
-                    {/* About Me Box */}
-                    <div className="box box-primary">
-                      <div className="box-header with-border">
-                        <h3 className="box-title">Note</h3>
-                      </div>
-                      {/* /.box-header */}
-                      <div className="box-body">
-                        <strong>
-                          <i className="fa fa-address-book margin-r-5"></i>{" "}
-                          Staff name
+                      {/* About Me Box */}
+                      <div className="box box-primary">
+                        <div className="box-header with-border">
+                          <h3 className="box-title">Note</h3>
+                        </div>
+                        {/* /.box-header */}
+                        <div className="box-body">
+                          <strong>
+                            <i className="fa fa-address-book margin-r-5"></i>{" "}
+                            Staff name
                         </strong>
-                        <Select
+                          <input
+                            required
+                            onChange={this.onChange}
+                            type="text"
+                            className="form-control"
+                            name="idUser"
+                            value={this.props.user.username}
+                            placeholder="Enter user"
+                          ></input>
+                          {/* <Select
                           name="idUser"
-                          id="idUser"
                           onMenuOpen={this.onListMemberClick}
                           onChange={this.onChangeSelectedUser}
                           isSearchable={true}
@@ -512,206 +522,206 @@ class OrderScreen extends Component {
                           required
                           value={invisibleInpUserVal}
                           onChange={this.onChange}
-                        />
-                        <br />
-                        <strong>
-                          <i className="fa fa-phone margin-r-5"></i> Customer
-                          phone
+                        /> */}
+                          <br />
+                          <strong>
+                            <i className="fa fa-phone margin-r-5"></i> Customer
+                            phone
                         </strong>
 
-                        <Select
-                          name="idMember"
-                          id="idMember"
-                          onMenuOpen={this.onListMemberClick}
-                          onChange={this.onChangeSelectedMember}
-                          isSearchable={true}
-                          options={listSelectMember}
-                          required
-                        ></Select>
-                        <input
-                          style={{ opacity: 0, height: 0 }}
-                          required
-                          value={invisibleInpMemVal}
-                          readOnly
-                        />
-                        <br />
-                        <strong>
-                          <i className="fa fa-sticky-note-o margin-r-5"></i>{" "}
-                          Notes
+                          <Select
+                            name="idMember"
+                            id="idMember"
+                            onMenuOpen={this.onListMemberClick}
+                            onChange={this.onChangeSelectedMember}
+                            isSearchable={true}
+                            options={listSelectMember}
+                            required
+                          ></Select>
+                          <input
+                            style={{ opacity: 0, height: 0 }}
+                            required
+                            value={invisibleInpMemVal}
+                            readOnly
+                          />
+                          <br />
+                          <strong>
+                            <i className="fa fa-sticky-note-o margin-r-5"></i>{" "}
+                            Notes
                         </strong>
-                        <input
-                          required
-                          onChange={this.onChange}
-                          type="text"
-                          className="form-control"
-                          id="comments"
-                          name="comments"
-                          placeholder="Enter notes"
-                        ></input>
+                          <input
+                            required
+                            onChange={this.onChange}
+                            type="text"
+                            className="form-control"
+                            id="comments"
+                            name="comments"
+                            placeholder="Enter notes"
+                          ></input>
+                        </div>
+                        {/* /.box-body */}
                       </div>
-                      {/* /.box-body */}
+                      {/* /.box */}
                     </div>
-                    {/* /.box */}
-                  </div>
-                  {/* /.col */}
-                </form>
+                    {/* /.col */}
+                  </form>
 
-                <div className="col-md-9">
-                  <div className="nav-tabs-custom">
-                    <ul className="nav nav-tabs">
-                      <li className="active">
-                        <a href="#activity" data-toggle="tab">
-                          Drink
+                  <div className="col-md-9">
+                    <div className="nav-tabs-custom">
+                      <ul className="nav nav-tabs">
+                        <li className="active">
+                          <a href="#activity" data-toggle="tab">
+                            Drink
                         </a>
-                      </li>
-                      <li>
-                        <a href="#timeline" data-toggle="tab">
-                          Food
+                        </li>
+                        <li>
+                          <a href="#timeline" data-toggle="tab">
+                            Food
                         </a>
-                      </li>
-                      <li>
-                        <a href="#settings" data-toggle="tab">
-                          Customers
+                        </li>
+                        <li>
+                          <a href="#settings" data-toggle="tab">
+                            Customers
                         </a>
-                      </li>
-                    </ul>
-                    <div className="tab-content">
-                      <div className="active tab-pane" id="activity">
-                        <div className="box box-primary">
-                          {products.map((eachProduct, index) => (
-                            <div
-                              key={eachProduct._id}
-                              style={menuStyle}
-                              className="box-body box-profile"
-                            >
-                              <img
-                                className="profile-user-img img-responsive img-circle"
-                                src={eachProduct.linkpic}
-                                alt="User profile picture"
-                              />
-                              <h3 className="profile-username text-center">
-                                {eachProduct.name}
-                              </h3>
-                              <p className="text-muted text-center">
-                                {eachProduct.price} VND
+                        </li>
+                      </ul>
+                      <div className="tab-content">
+                        <div className="active tab-pane" id="activity">
+                          <div className="box box-primary">
+                            {products.map((eachProduct, index) => (
+                              <div
+                                key={eachProduct._id}
+                                style={menuStyle}
+                                className="box-body box-profile"
+                              >
+                                <img
+                                  className="profile-user-img img-responsive img-circle"
+                                  src={eachProduct.linkpic}
+                                  alt="User profile picture"
+                                />
+                                <h3 className="profile-username text-center">
+                                  {eachProduct.name}
+                                </h3>
+                                <p className="text-muted text-center">
+                                  {eachProduct.price} VND
                               </p>
 
-                              <a
-                                className="btn btn-primary btn-block"
-                                onClick={() =>
-                                  this.handleAddToOrder(eachProduct)
-                                }
-                              >
-                                <b>Add to order </b>
-                              </a>
-                            </div>
-                          ))}
+                                <a
+                                  className="btn btn-primary btn-block"
+                                  onClick={() =>
+                                    this.handleAddToOrder(eachProduct)
+                                  }
+                                >
+                                  <b>Add to order </b>
+                                </a>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                      {/* /.tab-pane */}
+                        {/* /.tab-pane */}
 
-                      <div className="tab-pane" id="timeline">
-                        <p>ttt</p>
-                      </div>
-                      {/* /.tab-pane */}
+                        <div className="tab-pane" id="timeline">
+                          <p>ttt</p>
+                        </div>
+                        {/* /.tab-pane */}
 
-                      <div className="tab-pane" id="settings">
-                        <MemberModal />
-                        <div className="box-body">
-                          <div
-                            id="example1_wrapper"
-                            className="dataTables_wrapper form-inline dt-bootstrap"
-                          >
-                            <div className="row">
-                              <div>
-                                <div className="col-sm-6">
-                                  <div
-                                    id="example1_filter"
-                                    className="dataTables_filter"
-                                  >
-                                    <label style={{ float: "left" }}>
-                                      Search:
+                        <div className="tab-pane" id="settings">
+                          <MemberModal />
+                          <div className="box-body">
+                            <div
+                              id="example1_wrapper"
+                              className="dataTables_wrapper form-inline dt-bootstrap"
+                            >
+                              <div className="row">
+                                <div>
+                                  <div className="col-sm-6">
+                                    <div
+                                      id="example1_filter"
+                                      className="dataTables_filter"
+                                    >
+                                      <label style={{ float: "left" }}>
+                                        Search:
                                       <input
-                                        type="search"
-                                        name="query"
-                                        style={{ margin: "0px 5px" }}
-                                        className="form-control input-sm"
-                                        placeholder="Find me  "
-                                        aria-controls="example1"
-                                        onChange={this.handleOnSearchChange}
-                                        value={this.state.query}
-                                      />
-                                    </label>
+                                          type="search"
+                                          name="query"
+                                          style={{ margin: "0px 5px" }}
+                                          className="form-control input-sm"
+                                          placeholder="Find me  "
+                                          aria-controls="example1"
+                                          onChange={this.handleOnSearchChange}
+                                          value={this.state.query}
+                                        />
+                                      </label>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
 
-                            <div className="row">
-                              <div className="col-sm-12">
-                                <table
-                                  id="example1"
-                                  className="table table-bordered table-striped"
-                                >
-                                  <thead style={{ display: "block" }}>
-                                    <tr>
-                                      <th style={{ width: "5%" }}>#</th>
-                                      <th style={{ width: "20%" }}>Member</th>
-                                      <th style={{ width: "15%" }}>Phone</th>
-                                      <th style={{ width: "15%" }}>Point</th>
-                                      <th style={{ width: "15%" }}>
-                                        Created date
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody
-                                    style={{
-                                      display: "block",
-                                      overflow: "auto",
-                                      height: "200px"
-                                    }}
+                              <div className="row">
+                                <div className="col-sm-12">
+                                  <table
+                                    id="example1"
+                                    className="table table-bordered table-striped"
                                   >
-                                    {members.map((eachMember, index) => (
-                                      <tr key={eachMember._id}>
-                                        <td style={{ width: "6%" }}>
-                                          {index + 1}
-                                        </td>
-                                        <td style={{ width: "20%" }}>
-                                          {eachMember.name}
-                                        </td>
-                                        <td style={{ width: "15%" }}>
-                                          {eachMember.phone}
-                                        </td>
-                                        <td style={{ width: "15%" }}>
-                                          {eachMember.point}
-                                        </td>
-                                        <td style={{ width: "15%" }}>
-                                          {this.convertDate(
-                                            eachMember.createAt
-                                          )}
-                                        </td>
+                                    <thead style={{ display: "block" }}>
+                                      <tr>
+                                        <th style={{ width: "5%" }}>#</th>
+                                        <th style={{ width: "20%" }}>Member</th>
+                                        <th style={{ width: "15%" }}>Phone</th>
+                                        <th style={{ width: "15%" }}>Point</th>
+                                        <th style={{ width: "15%" }}>
+                                          Created date
+                                      </th>
                                       </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
+                                    </thead>
+                                    <tbody
+                                      style={{
+                                        display: "block",
+                                        overflow: "auto",
+                                        height: "200px"
+                                      }}
+                                    >
+                                      {members.map((eachMember, index) => (
+                                        <tr key={eachMember._id}>
+                                          <td style={{ width: "6%" }}>
+                                            {index + 1}
+                                          </td>
+                                          <td style={{ width: "20%" }}>
+                                            {eachMember.name}
+                                          </td>
+                                          <td style={{ width: "15%" }}>
+                                            {eachMember.phone}
+                                          </td>
+                                          <td style={{ width: "15%" }}>
+                                            {eachMember.point}
+                                          </td>
+                                          <td style={{ width: "15%" }}>
+                                            {this.convertDate(
+                                              eachMember.createAt
+                                            )}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
                             </div>
+                            {/*/.col (left) */}
                           </div>
-                          {/*/.col (left) */}
                         </div>
+                        {/* /.tab-pane */}
                       </div>
-                      {/* /.tab-pane */}
                     </div>
+                    {/* /.tab-content */}
                   </div>
-                  {/* /.tab-content */}
+                  {/* /.nav-tabs-custom */}
                 </div>
-                {/* /.nav-tabs-custom */}
-              </div>
-            </section>
+              </section>
 
-            {/* /.content */}
-          </React.Fragment>
-        )}
+              {/* /.content */}
+            </React.Fragment>
+          )}
       </Fragment>
     );
   }

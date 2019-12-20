@@ -25,18 +25,13 @@ class InvoiceRow extends Component {
     return year + "-" + month + "-" + dt;
   };
   handleEdit = id => {
-    this.props.history.push(`/invoice/edit/${id}`);
+    this.props.history.push(`/invoice/detail/${id}`);
   };
 
   handleInactive = id => {
     let Invoice = this.props;
     const newInvoice = {
       _id: Invoice._id,
-      idMember: Invoice.idMember,
-      idUser: Invoice.idUser,
-      totalAmt: Invoice.totalAmt,
-      createddate: Invoice.createddate,
-      comments: Invoice.comments,
       status: 0
     }
     this.props.updateInvoice(newInvoice);
@@ -48,8 +43,8 @@ class InvoiceRow extends Component {
     return (
       <tr>
         <td>{index + 1}</td>
-        <td>{Invoice.idUser}</td>
-        <td>{Invoice.idMember}</td>
+        <td>{Invoice.idUser.username}</td>
+        <td>{Invoice.idMember.name}</td>
         <td>{Invoice.totalAmt}</td>
         <td>{this.convertDate(Invoice.createddate)}</td>
         <td>{Invoice.comments}</td>
@@ -60,7 +55,7 @@ class InvoiceRow extends Component {
               type="button"
               className="btn btn-success"
             >
-              Edit
+              See Details
             </button>
 
             <button

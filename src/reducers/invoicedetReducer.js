@@ -1,7 +1,9 @@
 import {
   GET_INVOICEDETS,
   ADD_INVOICEDET,
-  GET_ALL_INVOICEDETS
+  GET_ALL_INVOICEDETS,
+  GET_BY_INVOICEID,
+
 } from "../actions/types";
 
 const initialState = {
@@ -11,13 +13,20 @@ const initialState = {
   response: null
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case GET_INVOICEDETS:
       return {
         ...state,
         invoicedets: action.payload,
         isLoaded: true,
+        type: action.type
+      };
+
+    case GET_BY_INVOICEID:
+      return {
+        ...state,
+        invoicedets: action.payload,
         type: action.type
       };
 
