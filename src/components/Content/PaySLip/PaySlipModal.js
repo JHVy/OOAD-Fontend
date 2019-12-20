@@ -3,34 +3,60 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { addPaySlip } from "../../../actions/payslipActions";
 import { showNoti } from "../../../actions/notificationActions";
-import { getSearchMembers } from "../../../actions/memberActions";
+
 import "react-notifications/lib/notifications.css";
 import Select from "react-select";
 import {
   NotificationContainer,
   NotificationManager
 } from "react-notifications";
+import Axios from "axios";
 
 const mongoose = require("mongoose");
 
 class PaySlipModal extends Component {
   state = {
     _id: "",
-    idUser: "",
+
     idSupplier: "",
+
     createddate: new Date(),
     totalAmt: 0,
     notiType: "",
-
     msg: "",
-    listSelectMember: [],
-    selectedMember: ""
+    options: [],
+    comment: ""
   };
-
   componentDidMount() {
-    this.props.getSearchMembers("");
+    Axios.get(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/supplier/getall/supply`,
+      this.tokenConfig(this.props.auth.token)
+    )
+      .then(response => {
+        let tempArr = [];
+
+        response.data.map(eachRes => {
+          tempArr.push({ label: eachRes.name, value: eachRes._id });
+        });
+        this.setState({ options: tempArr });
+      })
+      .catch(er => console.log(er.response));
   }
 
+  tokenConfig = token => {
+    const config = {
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+
+    //Header
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+
+    return config;
+  };
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.payslip.payslips !== this.props.payslip.payslips) {
       if (this.props.isLoaded === false) {
@@ -64,13 +90,15 @@ class PaySlipModal extends Component {
     let msg = "";
 
     //Validation
-    const isPassed = this.validateTotalAmt(value);
+    if (name === "totalAmt") {
+      const isPassed = this.validateTotalAmt(value);
+      if (!isPassed) {
+        msg = "Total Amount can only contain numbers";
+      }
+    }
     //const inputErrors = isPassed ? false : true;
 
-    if (!isPassed && name === "totalAmt") {
-      msg = "Total Amount can only contain numbers";
-    }
-    this.setState({ [name]: value, msg: msg });
+    this.setState({ [name]: value, msg });
   };
 
   validateTotalAmt = totalAmt => {
@@ -79,44 +107,34 @@ class PaySlipModal extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-
+    const { totalAmt, idSupplier, nameSupplier, comment } = this.state;
+    const { user } = this.props.auth;
+    const { _id, username } = user;
     const newItem = {
       _id: mongoose.Types.ObjectId(),
-      idUser: this.state.selectedMember.value,
-      idSupplier: this.state.idSupplier,
+      idUser: { _id, username },
+      idSupplier: {
+        _id: idSupplier,
+        name: nameSupplier
+      },
+      comment,
       createddate: new Date(),
-      totalAmt: this.state.totalAmt
+      totalAmt
     };
+    console.log(newItem);
 
     this.props.addPaySlip(newItem);
     // Close modal
     document.getElementById("triggerButton").click();
   };
-
-  onChangeSelectedMember = selectedMember => {
-    this.setState({ selectedMember: selectedMember });
-    //this.setState({ invisibleInpMemVal: selectedMember.value });
-  };
-
-  onListMemberClick = selectedMember => {
-    this.setState(state => {
-      let listSelectMember = [...state.listSelectMember];
-      this.props.member.members.map(el => {
-        listSelectMember.push({
-          value: el._id,
-          label: el.name + " - " + el.phone
-        });
-      });
-
-      return {
-        ...state.listSelectMember,
-        listSelectMember
-      };
+  onChangeSelectSupplier = event => {
+    this.setState({
+      idSupplier: event.value,
+      nameSupplier: event.label
     });
   };
-
   render() {
-    const { notiType, msg, listSelectMember } = this.state;
+    const { notiType, msg, options, comment } = this.state;
     return (
       <Fragment>
         {notiType !== "" ? this.createNotification() : null}
@@ -172,37 +190,27 @@ class PaySlipModal extends Component {
                     <label htmlFor="recipient-name" className="col-form-label">
                       User:
                     </label>
-                    <Select
-                      name="idUser"
-                      id="idUser"
-                      onMenuOpen={this.onListMemberClick}
-                      onChange={this.onChangeSelectedMember}
-                      isSearchable={true}
-                      options={listSelectMember}
-                    ></Select>
-                    {/* <input
+                    <input
                       type="text"
                       className="form-control"
-                      id="idmember"
+                      id="username"
                       placeholder="Add payslip"
-                      name="idMember"
-                      onChange={this.onChange}
-                      required
-                    /> */}
+                      name="username"
+                      disabled
+                      readOnly
+                      value={this.props.auth.user.fullName}
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="recipient-name" className="col-form-label">
                       Supplier:
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="idsupplier"
-                      placeholder="Add supplier"
-                      name="idSupplier"
-                      onChange={this.onChange}
-                      required
-                    />
+                    <Select
+                      onMenuOpen={this.onListMemberClick}
+                      onChange={this.onChangeSelectSupplier}
+                      isSearchable={true}
+                      options={options}
+                    ></Select>
                   </div>
 
                   <div className="form-group">
@@ -210,13 +218,30 @@ class PaySlipModal extends Component {
                       Total Amount:
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="form-control"
                       id="totalAmt"
                       placeholder="Add total amount"
                       name="totalAmt"
                       onChange={this.onChange}
                       required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label
+                      htmlFor="inputCreateddate"
+                      className="col-form-label"
+                    >
+                      Comment:
+                    </label>
+                    <textarea
+                      name="comment"
+                      type="text"
+                      className="form-control"
+                      id="inputTotalAmt"
+                      placeholder="Loading..."
+                      value={comment}
+                      onChange={this.onChange}
                     />
                   </div>
                 </div>
@@ -241,17 +266,19 @@ class PaySlipModal extends Component {
   }
 }
 PaySlipModal.propTypes = {
-  getSearchMembers: PropTypes.func.isRequired,
-  member: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  payslip: PropTypes.object.isRequired,
+  isLoaded: PropTypes.bool.isRequired,
+  addPaySlip: PropTypes.func.isRequired,
+  showNoti: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   payslip: state.payslip,
   isLoaded: state.member.isLoaded,
-  member: state.member
+  auth: state.auth
 });
 export default connect(mapStateToProps, {
   addPaySlip,
-  showNoti,
-  getSearchMembers
+  showNoti
 })(PaySlipModal);

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { addUser } from "../../../actions/userActions";
 
 import mongoose from "mongoose";
-
+import Select from "react-select";
 import PropTypes from "prop-types";
 import Axios from "axios";
 import Loader from "react-loader";
@@ -15,7 +15,7 @@ const mapStateToProps = state => ({
 
 class UserModal extends Component {
   state = {
-    idRole: "",
+    idRole: null,
     nameRole: "",
     username: "",
     fullName: "",
@@ -26,13 +26,11 @@ class UserModal extends Component {
     options: []
   };
   handleSelectChange = event => {
-    let index = event.nativeEvent.target.selectedIndex;
-
-    // console.log(event.nativeEvent.target[index].text);
+    console.log(event);
 
     this.setState({
-      idRole: event.target.value,
-      nameRole: event.nativeEvent.target[index].text
+      idRole: event.value,
+      nameRole: event.label
     });
   };
 
@@ -42,7 +40,12 @@ class UserModal extends Component {
       this.tokenConfig(this.props.auth.token)
     )
       .then(response => {
-        this.setState({ options: response.data });
+        let tempArr = [];
+
+        response.data.map(eachRes => {
+          tempArr.push({ label: eachRes.name, value: eachRes._id });
+        });
+        this.setState({ options: tempArr });
       })
       .catch(er => console.log(er.response));
   }
@@ -221,7 +224,13 @@ class UserModal extends Component {
                       />
                       <div className="form-group">
                         <label>Role</label>
-                        <select
+                        <Select
+                          onChange={this.handleSelectChange}
+                          isSearchable={true}
+                          options={options}
+                          placeholder="Please choose role"
+                        ></Select>
+                        {/* <select
                           value={idRole}
                           onChange={this.handleSelectChange}
                           className="form-control"
@@ -234,7 +243,7 @@ class UserModal extends Component {
                           <option value="" hidden>
                             Please choose role
                           </option>
-                        </select>
+                        </select> */}
                       </div>
 
                       <label

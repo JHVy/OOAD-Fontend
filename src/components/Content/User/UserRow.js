@@ -13,13 +13,13 @@ class UserRow extends Component {
   };
   render() {
     const { user, index } = this.props;
-    const { idRole, username, phoneNumber, address, _id } = user;
+    const { idRole, username, phoneNumber, _id } = user;
     return (
       <tr>
         <td>{index + 1}</td>
         <td>{idRole.name}</td>
-        <td>{user.username}</td>
-        <td>{user.phoneNumber}</td>
+        <td>{username}</td>
+        <td>{phoneNumber}</td>
         {/* <td>{user.address}</td> */}
         <td>
           <div className="btn-group">

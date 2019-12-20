@@ -5,7 +5,7 @@ import { updateUser } from "../../../actions/userActions";
 import { pushHistory } from "../../../actions/historyActions";
 import { Link } from "react-router-dom";
 import UserChangePassModal from "./UserChangePassModal";
-
+import Select from "react-select";
 const mapStateToProps = state => ({
   history: state.history.history,
   auth: state.auth
@@ -45,7 +45,12 @@ class UserEdit extends Component {
         this.tokenConfig(this.props.auth.token)
       )
       .then(response => {
-        this.setState({ options: response.data });
+        let tempArr = [];
+
+        response.data.map(eachRes => {
+          tempArr.push({ label: eachRes.name, value: eachRes._id });
+        });
+        this.setState({ options: tempArr });
       })
       .catch(er => console.log(er.response));
     axios
@@ -87,7 +92,6 @@ class UserEdit extends Component {
   handleSubmit = e => {
     const {
       idRole,
-      nameRole,
       username,
       fullName,
       phoneNumber,
@@ -114,22 +118,22 @@ class UserEdit extends Component {
   };
 
   handleSelectChange = event => {
-    let index = event.nativeEvent.target.selectedIndex;
+    // let index = event.nativeEvent.target.selectedIndex;
     this.setState({
-      idRole: event.target.value,
-      nameRole: event.nativeEvent.target[index].text
+      idRole: event.value,
+      nameRole: event.label
     });
   };
 
   render() {
     const {
       idRole,
+      nameRole,
       username,
       fullName,
       phoneNumber,
       address,
       _id,
-      newPassword,
       options
     } = this.state;
 
@@ -182,17 +186,16 @@ class UserEdit extends Component {
                     <div className="form-group">
                       <label className="col-sm-2 control-label">Role</label>
                       <div className="col-sm-10">
-                        <select
-                          value={idRole}
+                        <Select
+                          name="idCategory"
                           onChange={this.handleSelectChange}
-                          className="form-control"
-                        >
-                          {options.map(eachOption => (
-                            <option key={eachOption._id} value={eachOption._id}>
-                              {eachOption.name}
-                            </option>
-                          ))}
-                        </select>
+                          isSearchable={true}
+                          options={options}
+                          value={{
+                            value: idRole,
+                            label: nameRole
+                          }}
+                        ></Select>
                       </div>
                     </div>
 

@@ -15,7 +15,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const mapStateToProps = state => ({
-  payslips: state.payslip,
+  payslips: state.payslip.payslips,
   isLoaded: state.payslip.isLoaded
 });
 
@@ -49,13 +49,14 @@ class PaySlip extends Component {
 
   getTotalDocuments = () => {
     const { query } = this.state;
-    console.log(query);
     let newQuery = "";
     if (query === "") newQuery = "undefined";
     else newQuery = query;
 
     axios
-      .get(`/api/payslip/count/${newQuery}`)
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/payslip/count/${newQuery}`
+      )
       .then(response => {
         this.setState({ totalDocuments: response.data });
       })
@@ -71,7 +72,9 @@ class PaySlip extends Component {
     else newQuery = query;
 
     axios
-      .get(`/api/payslip/count/${newQuery}`)
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/payslip/count/${newQuery}`
+      )
       .then(response => {
         let pages = Math.floor(response.data / select);
         let remainder = response.data % select;
@@ -150,6 +153,8 @@ class PaySlip extends Component {
   render() {
     const { isLoaded } = this.props;
     const { select, totalDocuments, notiType } = this.state;
+    console.log(totalDocuments);
+
     return (
       <Fragment>
         {!isLoaded ? (
@@ -264,7 +269,7 @@ class PaySlip extends Component {
                                   <th style={{ width: "15%" }}>Total Amount</th>
                                 </tr>
                               </thead>
-                              <tbody>{this.render}</tbody>
+                              <tbody>{this.renderPayslips()}</tbody>
                               <tfoot>
                                 <tr>
                                   <th>#</th>
@@ -320,7 +325,7 @@ class PaySlip extends Component {
 
 PaySlip.propTypes = {
   getPaySlips: PropTypes.func.isRequired,
-  payslips: PropTypes.object.isRequired
+  payslips: PropTypes.array.isRequired
 };
 
 export default connect(mapStateToProps, { getPaySlips, showNoti })(PaySlip);

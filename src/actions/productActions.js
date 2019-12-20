@@ -60,12 +60,14 @@ export const deleteProduct = id => (dispatch, getState) => {
 };
 
 export const addProduct = newProduct => (dispatch, getState) => {
-  console.log(newProduct);
-
+  let newProduct2 = {
+    ...newProduct,
+    idCategory: newProduct.idCategory._id
+  };
   axios
     .post(
       `${process.env.REACT_APP_BACKEND_HOST}/api/product/`,
-      newProduct,
+      newProduct2,
       tokenConfig(getState)
     )
     .then(response => {

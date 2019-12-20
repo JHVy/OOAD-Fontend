@@ -17,7 +17,11 @@ export const getPaySlips = (show = 5, page = 1, query) => (
       tokenConfig(getState)
     )
 
-    .then(response => dispatch({ type: GET_PAYSLIPS, payload: response.data }))
+    .then(response => {
+      console.log(response);
+
+      dispatch({ type: GET_PAYSLIPS, payload: response.data });
+    })
     .catch(er => console.log(er.response));
 };
 
@@ -37,10 +41,16 @@ export const deletePaySlip = id => (dispatch, getState) => {
 };
 
 export const addPaySlip = newPaySlip => (dispatch, getState) => {
+  const { idUser, idSupplier } = newPaySlip;
+  let newPayslip2 = {
+    ...newPaySlip,
+    idUser: idUser._id,
+    idSupplier: idSupplier._id
+  };
   axios
     .post(
       `${process.env.REACT_APP_BACKEND_HOST}/api/payslip/`,
-      newPaySlip,
+      newPayslip2,
       tokenConfig(getState)
     )
     .then(response => {

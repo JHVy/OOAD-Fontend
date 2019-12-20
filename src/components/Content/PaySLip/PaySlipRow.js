@@ -25,14 +25,15 @@ class PaySlipRow extends Component {
 
   render() {
     const { payslip, index } = this.props;
+    const { idUser, idSupplier, createddate, totalAmt } = payslip;
 
     return (
       <tr>
         <td>{index + 1}</td>
-        <td>{payslip.idMember}</td>
-        <td>{payslip.idSupplier}</td>
-        <td>{this.convertDate(payslip.createddate)}</td>
-        <td>{payslip.totalAmt}</td>
+        <td>{idUser.fullName}</td>
+        <td>{idSupplier.name}</td>
+        <td>{this.convertDate(createddate)}</td>
+        <td>{totalAmt}</td>
         <td>
           <div className="btn-group">
             <button

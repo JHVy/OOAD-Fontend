@@ -9,6 +9,7 @@ import { NotificationContainer } from "react-notifications";
 import Select from "react-select";
 import PropTypes from "prop-types";
 import mongoose from "mongoose";
+import Axios from "axios";
 
 class ProductModal extends Component {
   constructor(props) {
@@ -19,24 +20,54 @@ class ProductModal extends Component {
   state = {
     name: "",
     idCategory: "",
+    nameCategory: "",
     price: 0,
-    linkpic: '',
+    linkpic: "",
     status: 1,
     _id: "",
     msg: "",
     notiType: "",
-    listCate: [],
-    listStatus: [{ label: 'Inactive', value: 0 }, { label: 'Available', value: 1 }],
-    selectedStatus: 1,
+    options: [],
+    listStatus: [
+      { label: "Inactive", value: 0 },
+      { label: "Available", value: 1 }
+    ]
   };
 
   handleClick = () => {
-    this.upload.click()
-  }
+    this.upload.click();
+  };
 
   componentDidMount() {
-    this.props.getAllCategories('');
+    Axios.get(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/category/getall/category`,
+      this.tokenConfig(this.props.auth.token)
+    )
+      .then(response => {
+        let tempArr = [];
+
+        response.data.map(eachRes => {
+          tempArr.push({ label: eachRes.name, value: eachRes._id });
+        });
+        this.setState({ options: tempArr });
+      })
+      .catch(er => console.log(er.response));
   }
+
+  tokenConfig = token => {
+    const config = {
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+
+    //Header
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+
+    return config;
+  };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.product.products !== this.props.product.products) {
@@ -60,7 +91,6 @@ class ProductModal extends Component {
     }
   }
   onChange = e => {
-
     const { name, value } = e.target;
     let msg = "";
 
@@ -78,13 +108,24 @@ class ProductModal extends Component {
   };
 
   onSubmit = e => {
+    const {
+      idCategory,
+      nameCategory,
+      name,
+      price,
+      linkpic,
+      status
+    } = this.state;
     e.preventDefault();
     const newItem = {
-      idCategory: this.state.idCategory,
-      name: this.state.name,
-      price: this.state.price,
-      linkpic: this.state.linkpic,
-      status: this.state.status,
+      idCategory: {
+        _id: idCategory,
+        name: nameCategory
+      },
+      name,
+      price,
+      linkpic,
+      status,
       _id: mongoose.Types.ObjectId()
     };
 
@@ -103,39 +144,26 @@ class ProductModal extends Component {
     this.setState({ notiType: "" });
   };
 
-  onChangeSelectedCate = idCategory => {
-    this.setState({ idCategory: idCategory.value })
-  }
+  onChangeSelectedCate = event => {
+    this.setState({
+      idCategory: event.value,
+      nameCategory: event.label
+    });
+  };
 
   onChangeSelectedStatus = status => {
-    this.setState({ status: status.value })
-  }
-
-  onMenuOpen = () => {
-    this.setState(state => {
-      let listCate = [...state.listCate]
-      if (this.props.category.categories.length === this.state.listCate.length) return;
-      else listCate = [];
-
-      this.props.category.categories.map(el => {
-        listCate.push({ 'value': el._id, 'label': el.name })
-      });
-
-      return {
-        listCate
-      }
-    });
-  }
+    this.setState({ status: status.value });
+  };
 
   onChangeFile(event) {
     event.stopPropagation();
     event.preventDefault();
     var file = event.target.files[0];
-    this.setState({ linkpic: '../../dist/img/' + file.name });
+    this.setState({ linkpic: "../../dist/img/" + file.name });
   }
 
   render() {
-    const { notiType, name, price, linkpic, listCate, listStatus } = this.state;
+    const { notiType, name, price, linkpic, options, listStatus } = this.state;
 
     return (
       <Fragment>
@@ -210,11 +238,10 @@ class ProductModal extends Component {
                     </label>
                     <Select
                       name="idCategory"
-                      onMenuOpen={this.onMenuOpen}
                       onChange={this.onChangeSelectedCate}
                       isSearchable={true}
-                      options={listCate}>
-                    </Select>
+                      options={options}
+                    ></Select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="recipient-name" className="col-form-label">
@@ -234,9 +261,10 @@ class ProductModal extends Component {
                     <label htmlFor="recipient-name" className="col-form-label">
                       Chosse picture:
                     </label>
-                    <input id="myInput"
+                    <input
+                      id="myInput"
                       type="file"
-                      ref={(ref) => this.upload = "ref"}
+                      ref={ref => (this.upload = "ref")}
                       onChange={this.onChangeFile.bind(this)}
                     />
                   </div>
@@ -248,9 +276,8 @@ class ProductModal extends Component {
                       name="status"
                       onChange={this.onChangeSelectedStatus}
                       isSearchable={true}
-                      options={listStatus}>
-                    </Select>
-
+                      options={listStatus}
+                    ></Select>
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -286,7 +313,8 @@ ProductModal.propTypes = {
 const mapStateToProps = state => ({
   product: state.product,
   category: state.category,
-  isLoaded: state.product.isLoaded
+  isLoaded: state.product.isLoaded,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {

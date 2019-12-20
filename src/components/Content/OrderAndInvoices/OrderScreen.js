@@ -5,15 +5,12 @@ import axios from "axios";
 import { getInvoices, addInvoice } from "../../../actions/invoiceActions";
 import { addInvoiceDet } from "../../../actions/invoicedetActions";
 import { getSearchMembers, getMembers } from "../../../actions/memberActions";
-import {
-  getProducts,
-  deleteProduct
-} from "../../../actions/productActions";
-import { showNoti } from "../../../actions/notificationActions"
+import { getProducts, deleteProduct } from "../../../actions/productActions";
+import { showNoti } from "../../../actions/notificationActions";
 import MemberModal from "../Member/MemberModal";
-import Select from 'react-select';
+import Select from "react-select";
 import Loader from "react-loader";
-import { NotificationContainer } from 'react-notifications';
+import { NotificationContainer } from "react-notifications";
 const mongoose = require("mongoose");
 
 class OrderScreen extends Component {
@@ -21,19 +18,18 @@ class OrderScreen extends Component {
     super(props);
   }
   state = {
-    invisibleInpUserVal: '',
-    invisibleInpMemVal: '',
+    invisibleInpUserVal: "",
+    invisibleInpMemVal: "",
     listSelectMember: [],
     listSelectUser: [],
-    selectedMember: '',
-    selectedUser: '',
+    selectedMember: "",
+    selectedUser: "",
     listOrder: [],
-    idMember: '',
-    idUser: '',
-    comments: '',
+    idMember: "",
+    idUser: "",
+    comments: "",
     total: 0,
     inputQty: 0,
-
     sort: [{ value: "5" }, { value: "10" }, { value: "20" }],
     select: "5",
     currentPage: 1,
@@ -41,10 +37,10 @@ class OrderScreen extends Component {
     totalDocuments: 0,
     query: "",
 
-    notiType: "",
+    notiType: ""
   };
 
-  onChangeSelectedUser = (selectedUser) => {
+  onChangeSelectedUser = selectedUser => {
     this.setState({ invisibleInpUserVal: selectedUser.value });
   };
 
@@ -54,12 +50,11 @@ class OrderScreen extends Component {
     if (prevProps.invoice.invoices !== this.props.invoice.invoices) {
       if (isLoaded === false) {
         return;
-      };
+      }
 
-      if (invoice.type === 'ADD_INVOICE') {
+      if (invoice.type === "ADD_INVOICE") {
         if (invoice.response === 200) {
-
-          this.setState({ notiType: 'success' });
+          this.setState({ notiType: "success" });
 
           this.state.listOrder.map(el => {
             const newInvoiceDet = {
@@ -67,20 +62,25 @@ class OrderScreen extends Component {
               idProduct: el._id,
               price: el.price,
               quantity: el.orderQty,
-              discount: '',
+              discount: "",
               _id: mongoose.Types.ObjectId()
             };
             this.props.addInvoiceDet(newInvoiceDet);
-          })
+          });
 
-          setTimeout(function () { //Start the timer
-            window.location.reload();
-          }.bind(this), 500)
-
+          // setTimeout(
+          //   function() {
+          //     //Start the timer
+          //     window.location.reload();
+          //   }.bind(this),
+          //   500
+          // );
         } else {
-          this.setState({ notiType: 'failure' });
+          this.setState({ notiType: "failure" });
         }
-      } else { return; }
+      } else {
+        return;
+      }
     }
   }
 
@@ -99,7 +99,7 @@ class OrderScreen extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onChangeSelectedMember = (selectedMember) => {
+  onChangeSelectedMember = selectedMember => {
     this.setState({ selectedMember: selectedMember });
     this.setState({ invisibleInpMemVal: selectedMember.value });
   };
@@ -107,33 +107,47 @@ class OrderScreen extends Component {
   //load len list member
   onListMemberClick = () => {
     this.setState(state => {
-      let listSelectMember = [...state.listSelectMember]
-      if (this.props.member.members.length === this.state.listSelectMember.length) return;
+      let listSelectMember = [...state.listSelectMember];
+      if (
+        this.props.member.members.length === this.state.listSelectMember.length
+      )
+        return;
       else listSelectMember = [];
       this.props.member.members.map(el => {
-        listSelectMember.push({ 'value': el._id, 'label': el.name + ' - ' + el.phone })
+        listSelectMember.push({
+          value: el._id,
+          label: el.name + " - " + el.phone
+        });
       });
       return {
         listSelectMember
-      }
+      };
     });
-
   };
 
+
+
   handleInputQtyChange(e, productDet) {
-    let totalTmp = 0, inputVal = 0;
-    if (e.target.value !== '') { inputVal = parseInt(e.target.value); }
+    let totalTmp = 0,
+      inputVal = 0;
+    if (e.target.value !== "") {
+      inputVal = parseInt(e.target.value);
+    }
 
     this.setState(state => {
       let listOrder = [...state.listOrder];
 
-      listOrder.map(function (el, index) {
+      listOrder.map(function(el, index) {
         if (productDet._id === el._id) {
-
-          //thêm món đã có sẵn trong order -> tăng qty      
-          const tempObj = { _id: el._id, name: el.name, price: el.price, orderQty: inputVal }
+          //thêm món đã có sẵn trong order -> tăng qty
+          const tempObj = {
+            _id: el._id,
+            name: el.name,
+            price: el.price,
+            orderQty: inputVal
+          };
           totalTmp = state.total - el.price * el.orderQty;
-          listOrder.splice(index, 1); //bỏ dòng order hiện tại  
+          listOrder.splice(index, 1); //bỏ dòng order hiện tại
 
           listOrder = [...listOrder, tempObj]; //thêm dòng order mới thay vào chỗ vừa bỏ
           totalTmp = totalTmp + productDet.price * inputVal;
@@ -142,13 +156,12 @@ class OrderScreen extends Component {
         }
       });
 
-      this.setState({ total: totalTmp })
+      this.setState({ total: totalTmp });
 
       return {
         listOrder
-      }
+      };
     });
-
   }
 
   handleAddToOrder = productDet => {
@@ -158,11 +171,17 @@ class OrderScreen extends Component {
     this.setState(state => {
       let listOrder = [...state.listOrder];
 
-      listOrder.map(function (el, index) {
-        if (productDet._id === el._id) { //thêm món đã có sẵn trong order -> tăng qty
-          const tempObj = { _id: el._id, name: el.name, price: el.price, orderQty: el.orderQty + 1 }
+      listOrder.map(function(el, index) {
+        if (productDet._id === el._id) {
+          //thêm món đã có sẵn trong order -> tăng qty
+          const tempObj = {
+            _id: el._id,
+            name: el.name,
+            price: el.price,
+            orderQty: el.orderQty + 1
+          };
           totalTmp = state.total - el.price * el.orderQty;
-          listOrder.splice(index, 1); //bỏ dòng order hiện tại        
+          listOrder.splice(index, 1); //bỏ dòng order hiện tại
 
           listOrder = [...listOrder, tempObj]; //thêm dòng order mới thay vào chỗ vừa bỏ
           totalTmp = state.total + productDet.price * 1;
@@ -172,54 +191,62 @@ class OrderScreen extends Component {
         }
       });
 
-      if (exit === 0) { //thêm món chưa có sẵn trong order
-        const quantity = productDet.quantity - 1 < 0 ? 0 : productDet.quantity - 1;
-        const orderDetail = { _id: productDet._id, name: productDet.name, price: productDet.price, orderQty: 1, quantity: quantity };
-        listOrder = [...state.listOrder, orderDetail]
+      if (exit === 0) {
+        //thêm món chưa có sẵn trong order
+        const quantity =
+          productDet.quantity - 1 < 0 ? 0 : productDet.quantity - 1;
+        const orderDetail = {
+          _id: productDet._id,
+          name: productDet.name,
+          price: productDet.price,
+          orderQty: 1,
+          quantity: quantity
+        };
+        listOrder = [...state.listOrder, orderDetail];
 
         totalTmp = state.total + productDet.price * orderDetail.orderQty;
       }
-      this.setState({ total: totalTmp })
+      this.setState({ total: totalTmp });
       return {
         listOrder
-      }
+      };
     });
   };
 
   removeItem(index) {
-
     this.setState(state => {
-
       //set total invoice
-      let totalTmp = state.total - this.state.listOrder[index].price * this.state.listOrder[index].orderQty;
-      this.setState({ total: totalTmp })
+      let totalTmp =
+        state.total -
+        this.state.listOrder[index].price *
+          this.state.listOrder[index].orderQty;
+      this.setState({ total: totalTmp });
 
-      let listOrder = [...state.listOrder]
+      let listOrder = [...state.listOrder];
       listOrder.splice(index, 1);
       return {
         ...state.listOrder, //cai dau`
         listOrder //neu ko co cai dau thi lay cai nay
-      }
+      };
     });
   }
 
   onSubmit = e => {
     e.preventDefault();
-    let idInvoice = mongoose.Types.ObjectId();
     const newInvoice = {
       idMember: this.state.selectedMember.value,
-      idUser: 'this.state.selectedUser.value',
+      idUser: this.state.selectedUser.value,
       totalAmt: this.state.total,
       createddate: new Date(),
       comments: this.state.comments,
       status: 1,
-      _id: idInvoice,
+      _id: mongoose.Types.ObjectId()
     };
 
     if (this.state.total === 0) {
-      this.setState({ notiType: 'warning-order' });
+      this.setState({ notiType: "warning-order" });
       return;
-    };
+    }
     this.props.addInvoice(newInvoice);
   };
 
@@ -230,7 +257,7 @@ class OrderScreen extends Component {
     let dt = newDate.getDate();
 
     dt = dt < 10 ? `0${dt}` : dt;
-    month = month < 10 ? `0${month}` : month
+    month = month < 10 ? `0${month}` : month;
 
     return year + "-" + month + "-" + dt;
   };
@@ -241,7 +268,7 @@ class OrderScreen extends Component {
     this.getPages();
     this.props.getProducts(select, currentPage, query);
     //this.props.getMembers(select, currentPage, query);
-    this.props.getSearchMembers('');
+    this.props.getSearchMembers("");
   }
 
   getTotalDocuments = () => {
@@ -251,10 +278,11 @@ class OrderScreen extends Component {
     else newQuery = query;
 
     axios
-      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/product/count/${newQuery}`)
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/product/count/${newQuery}`
+      )
       .then(response => {
         this.setState({ totalDocuments: response.data });
-
       })
       .catch(er => {
         console.log(er.response);
@@ -269,7 +297,9 @@ class OrderScreen extends Component {
     else newQuery = query;
 
     axios
-      .get(`${process.env.REACT_APP_BACKEND_HOST}/api/product/count/${newQuery}`)
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/product/count/${newQuery}`
+      )
       .then(response => {
         let pages = Math.floor(response.data / select);
         let remainder = response.data % select;
@@ -329,282 +359,359 @@ class OrderScreen extends Component {
   };
 
   stages = {
-    left: [{
-      percent: 25,
-      icon: 'link',
-      text: 'Get link',
-      action: (event, inst) => {
-        this.toast('Link copied');
+    left: [
+      {
+        percent: 25,
+        icon: "link",
+        text: "Get link",
+        action: (event, inst) => {
+          this.toast("Link copied");
+        }
+      },
+      {
+        percent: 50,
+        icon: "download",
+        text: "Download",
+        action: (event, inst) => {
+          this.toast("Downloaded");
+        }
       }
-    }, {
-      percent: 50,
-      icon: 'download',
-      text: 'Download',
-      action: (event, inst) => {
-        this.toast('Downloaded');
+    ],
+    right: [
+      {
+        percent: -50,
+        icon: "remove",
+        text: "Delete",
+        confirm: true,
+        action: (event, inst) => {
+          // inst.remove(event.target, null, () => {
+          // });
+          this.removeItem(event.index);
+          return true;
+        }
       }
-    }],
-    right: [{
-      percent: -50,
-      icon: 'remove',
-      text: 'Delete',
-      confirm: true,
-      action: (event, inst) => {
-        // inst.remove(event.target, null, () => {
-        // });
-        this.removeItem(event.index);
-        return true;
-      }
-    }]
+    ]
   };
   createNotification = () => {
     this.props.showNoti(this.state.notiType);
-    this.setState({ notiType: '' });
+    this.setState({ notiType: "" });
   };
 
   render() {
     const { products } = this.props.product;
     const { members } = this.props.member;
     const { isLoaded } = this.props;
-    const { invisibleInpUserVal, invisibleInpMemVal, listOrder, listSelectMember, total } = this.state;
+    const {
+      invisibleInpUserVal,
+      invisibleInpMemVal,
+      listOrder,
+      listSelectMember,
+      total
+    } = this.state;
     return (
       <Fragment>
         {!isLoaded ? (
           <Loader></Loader>
         ) : (
-            <React.Fragment>
-              {this.state.notiType !== "" ? (
-                this.createNotification()
-              ) : null}
-              <NotificationContainer />
+          <React.Fragment>
+            {this.state.notiType !== "" ? this.createNotification() : null}
+            <NotificationContainer />
 
-              {/* Content Header (Page header) */}
-              <section className="content-header">
-                <h1>
-                  Order
-            {/* <small>Preview</small> */}
-                </h1>
-                <ol className="breadcrumb">
-                  <li>
-                    <a href="fake_url">
-                      <i className="fa fa-dashboard" /> Home
-              </a>
-                  </li>
-                  <li>
-                    <a href="fake_url">Order</a>
-                  </li>
-                </ol>
-              </section>
-              {/* Main content */}
+            {/* Content Header (Page header) */}
+            <section className="content-header">
+              <h1>
+                Order
+                {/* <small>Preview</small> */}
+              </h1>
+              <ol className="breadcrumb">
+                <li>
+                  <a href="fake_url">
+                    <i className="fa fa-dashboard" /> Home
+                  </a>
+                </li>
+                <li>
+                  <a href="fake_url">Order</a>
+                </li>
+              </ol>
+            </section>
+            {/* Main content */}
 
-              <section className="content">
-                <div className="row">
-                  <form onSubmit={this.onSubmit}>
-                    <div className="col-md-3">
-                      {/* Profile Image */}
-                      <div className="box box-primary">
-                        <div className="box-body box-profile">
+            <section className="content">
+              <div className="row">
+                <form onSubmit={this.onSubmit}>
+                  <div className="col-md-3">
+                    {/* Profile Image */}
+                    <div className="box box-primary">
+                      <div className="box-body box-profile">
+                        <h3 className="profile-username text-center">Order</h3>
 
-                          <h3 className="profile-username text-center">Order</h3>
+                        <p className="text-muted text-center">
+                          {this.convertDate(new Date())}
+                        </p>
 
-                          <p className="text-muted text-center">{this.convertDate(new Date())}</p>
-
-                          <ul className="list-group list-group-unbordered">
-                            {
-                              listOrder.map((eachProduct, index) => (
-                                <li className="list-group-item">
-                                  <a style={{ cursor: 'pointer' }} onClick={() => this.removeItem(index)} className="fa fa-trash-o"></a>
-                                  <b> {eachProduct.name} </b>
-                                  x <input style={{ border: 'none', width: '50px' }} type="number" value={eachProduct.orderQty} onChange={e => this.handleInputQtyChange(e, eachProduct)} />
-                                  <a className="pull-right">{eachProduct.price}</a>
-                                </li>
-                              ))
-                            }
-                            <li className="list-group-item">
-                              <b>Total </b><a className="pull-right">{total}</a>
+                        <ul className="list-group list-group-unbordered">
+                          {listOrder.map((eachProduct, index) => (
+                            <li key={eachProduct._id} className="list-group-item">
+                              <a
+                                style={{ cursor: "pointer" }}
+                                onClick={() => this.removeItem(index)}
+                                className="fa fa-trash-o"
+                              ></a>
+                              <b> {eachProduct.name} </b>x{" "}
+                              <input
+                                style={{ border: "none", width: "50px" }}
+                                type="number"
+                                value={eachProduct.orderQty}
+                                onChange={e =>
+                                  this.handleInputQtyChange(e, eachProduct)
+                                }
+                              />
+                              <a className="pull-right">
+                                {eachProduct.price * eachProduct.orderQty}
+                              </a>
                             </li>
-                          </ul>
+                          ))}
+                          <li className="list-group-item">
+                            <b>Total </b>
+                            <a className="pull-right">{total}</a>
+                          </li>
+                        </ul>
 
-                          <button className="btn btn-primary btn-block" type="submit"><b>Order</b></button>
-                        </div>
-                        {/* /.box-body */}
+                        <button
+                          className="btn btn-primary btn-block"
+                          type="submit"
+                        >
+                          <b>Order</b>
+                        </button>
                       </div>
-                      {/* /.box */}
-
-                      {/* About Me Box */}
-                      <div className="box box-primary">
-                        <div className="box-header with-border">
-                          <h3 className="box-title">Note</h3>
-                        </div>
-                        {/* /.box-header */}
-                        <div className="box-body">
-                          <strong><i className="fa fa-address-book margin-r-5"></i> Staff name</strong>
-                          <Select
-                            name='idUser'
-                            id='idUser'
-                            onMenuOpen={this.onListMemberClick}
-                            onChange={this.onChangeSelectedUser}
-                            isSearchable={true}
-                            options={listSelectMember}>
-                          </Select>
-                          <input
-                            style={{ opacity: 0, height: 0 }}
-                            required
-                            value={invisibleInpUserVal}
-                            onChange={this.onChange}
-                          />
-                          <br />
-                          <strong><i className="fa fa-phone margin-r-5"></i> Customer phone</strong>
-
-                          <Select
-                            name='idMember'
-                            id='idMember'
-                            onMenuOpen={this.onListMemberClick}
-                            onChange={this.onChangeSelectedMember}
-                            isSearchable={true}
-                            options={listSelectMember}
-                            required>
-                          </Select>
-                          <input
-                            style={{ opacity: 0, height: 0 }}
-                            required
-                            value={invisibleInpMemVal}
-                            readOnly
-                          />
-                          <br />
-                          <strong><i className="fa fa-sticky-note-o margin-r-5"></i> Notes</strong>
-                          <input
-                            required
-                            onChange={this.onChange}
-                            type="text"
-                            className="form-control"
-                            id="comments" name='comments'
-                            placeholder="Enter notes">
-                          </input>
-
-                        </div>
-                        {/* /.box-body */}
-                      </div>
-                      {/* /.box */}
+                      {/* /.box-body */}
                     </div>
-                    {/* /.col */}
-                  </form>
+                    {/* /.box */}
 
-                  <div className="col-md-9">
-                    <div className="nav-tabs-custom">
-                      <ul className="nav nav-tabs">
-                        <li className="active"><a href="#activity" data-toggle="tab">Drink</a></li>
-                        <li><a href="#timeline" data-toggle="tab">Food</a></li>
-                        <li><a href="#settings" data-toggle="tab">Customers</a></li>
-                      </ul>
-                      <div className="tab-content">
-                        <div className="active tab-pane" id="activity">
-                          <div className="box box-primary">
+                    {/* About Me Box */}
+                    <div className="box box-primary">
+                      <div className="box-header with-border">
+                        <h3 className="box-title">Note</h3>
+                      </div>
+                      {/* /.box-header */}
+                      <div className="box-body">
+                        <strong>
+                          <i className="fa fa-address-book margin-r-5"></i>{" "}
+                          Staff name
+                        </strong>
+                        <Select
+                          name="idUser"
+                          id="idUser"
+                          onMenuOpen={this.onListMemberClick}
+                          onChange={this.onChangeSelectedUser}
+                          isSearchable={true}
+                          options={listSelectMember}
+                        ></Select>
+                        <input
+                          style={{ opacity: 0, height: 0 }}
+                          required
+                          value={invisibleInpUserVal}
+                          onChange={this.onChange}
+                        />
+                        <br />
+                        <strong>
+                          <i className="fa fa-phone margin-r-5"></i> Customer
+                          phone
+                        </strong>
 
-                            {products.map((eachProduct, index) => (
-                              <div key={eachProduct._id} style={menuStyle} className="box-body box-profile">
-                                <img className="profile-user-img img-responsive img-circle" src={eachProduct.linkpic} alt="User profile picture" />
-                                <h3 className="profile-username text-center">{eachProduct.name}</h3>
-                                <p className="text-muted text-center">{eachProduct.price} VND</p>
+                        <Select
+                          name="idMember"
+                          id="idMember"
+                          onMenuOpen={this.onListMemberClick}
+                          onChange={this.onChangeSelectedMember}
+                          isSearchable={true}
+                          options={listSelectMember}
+                          required
+                        ></Select>
+                        <input
+                          style={{ opacity: 0, height: 0 }}
+                          required
+                          value={invisibleInpMemVal}
+                          readOnly
+                        />
+                        <br />
+                        <strong>
+                          <i className="fa fa-sticky-note-o margin-r-5"></i>{" "}
+                          Notes
+                        </strong>
+                        <input
+                          required
+                          onChange={this.onChange}
+                          type="text"
+                          className="form-control"
+                          id="comments"
+                          name="comments"
+                          placeholder="Enter notes"
+                        ></input>
+                      </div>
+                      {/* /.box-body */}
+                    </div>
+                    {/* /.box */}
+                  </div>
+                  {/* /.col */}
+                </form>
 
-                                <a className="btn btn-primary btn-block"
-                                  onClick={() => this.handleAddToOrder(eachProduct)}>
-                                  <b>Add to order </b>
-                                </a>
-                              </div>
-                            ))}
-
-                          </div>
-                        </div>
-                        {/* /.tab-pane */}
-
-                        <div className="tab-pane" id="timeline">
-                          <p>ttt</p>
-                        </div>
-                        {/* /.tab-pane */}
-
-                        <div className="tab-pane" id="settings">
-                          <MemberModal />
-                          <div className="box-body">
+                <div className="col-md-9">
+                  <div className="nav-tabs-custom">
+                    <ul className="nav nav-tabs">
+                      <li className="active">
+                        <a href="#activity" data-toggle="tab">
+                          Drink
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#timeline" data-toggle="tab">
+                          Food
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#settings" data-toggle="tab">
+                          Customers
+                        </a>
+                      </li>
+                    </ul>
+                    <div className="tab-content">
+                      <div className="active tab-pane" id="activity">
+                        <div className="box box-primary">
+                          {products.map((eachProduct, index) => (
                             <div
-                              id="example1_wrapper"
-                              className="dataTables_wrapper form-inline dt-bootstrap"
+                              key={eachProduct._id}
+                              style={menuStyle}
+                              className="box-body box-profile"
                             >
-                              <div className="row">
-                                <div>
-                                  <div className="col-sm-6">
-                                    <div
-                                      id="example1_filter"
-                                      className="dataTables_filter"
-                                    >
-                                      <label style={{ float: "left" }}>
-                                        Search:
-                                          <input
-                                          type="search"
-                                          name="query"
-                                          style={{ margin: "0px 5px" }}
-                                          className="form-control input-sm"
-                                          placeholder="Find me  "
-                                          aria-controls="example1"
-                                          onChange={this.handleOnSearchChange}
-                                          value={this.state.query}
-                                        />
-                                      </label>
-                                    </div>
+                              <img
+                                className="profile-user-img img-responsive img-circle"
+                                src={eachProduct.linkpic}
+                                alt="User profile picture"
+                              />
+                              <h3 className="profile-username text-center">
+                                {eachProduct.name}
+                              </h3>
+                              <p className="text-muted text-center">
+                                {eachProduct.price} VND
+                              </p>
+
+                              <a
+                                className="btn btn-primary btn-block"
+                                onClick={() =>
+                                  this.handleAddToOrder(eachProduct)
+                                }
+                              >
+                                <b>Add to order </b>
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {/* /.tab-pane */}
+
+                      <div className="tab-pane" id="timeline">
+                        <p>ttt</p>
+                      </div>
+                      {/* /.tab-pane */}
+
+                      <div className="tab-pane" id="settings">
+                        <MemberModal />
+                        <div className="box-body">
+                          <div
+                            id="example1_wrapper"
+                            className="dataTables_wrapper form-inline dt-bootstrap"
+                          >
+                            <div className="row">
+                              <div>
+                                <div className="col-sm-6">
+                                  <div
+                                    id="example1_filter"
+                                    className="dataTables_filter"
+                                  >
+                                    <label style={{ float: "left" }}>
+                                      Search:
+                                      <input
+                                        type="search"
+                                        name="query"
+                                        style={{ margin: "0px 5px" }}
+                                        className="form-control input-sm"
+                                        placeholder="Find me  "
+                                        aria-controls="example1"
+                                        onChange={this.handleOnSearchChange}
+                                        value={this.state.query}
+                                      />
+                                    </label>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="row">
-                                <div className="col-sm-12">
-                                  <table
-                                    id="example1"
-                                    className="table table-bordered table-striped"
-                                  >
-                                    <thead style={{ display: "block" }}>
-                                      <tr>
-                                        <th style={{ width: "5%" }}>#</th>
-                                        <th style={{ width: "20%" }}>Member</th>
-                                        <th style={{ width: "15%" }}>Phone</th>
-                                        <th style={{ width: "15%" }}>Point</th>
-                                        <th style={{ width: "15%" }}>Created date</th>
-
-                                      </tr>
-                                    </thead>
-                                    <tbody style={{ display: "block", overflow: "auto", height: "200px" }}>
-                                      {members.map((eachMember, index) => (
-                                        <tr key={eachMember._id}>
-                                          <td style={{ width: "6%" }}>{index + 1}</td>
-                                          <td style={{ width: "20%" }}>{eachMember.name}</td>
-                                          <td style={{ width: "15%" }}>{eachMember.phone}</td>
-                                          <td style={{ width: "15%" }}>{eachMember.point}</td>
-                                          <td style={{ width: "15%" }}>{this.convertDate(eachMember.createAt)}</td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-
-                                  </table>
-                                </div>
-                              </div>
-
                             </div>
-                            {/*/.col (left) */}
+
+                            <div className="row">
+                              <div className="col-sm-12">
+                                <table
+                                  id="example1"
+                                  className="table table-bordered table-striped"
+                                >
+                                  <thead style={{ display: "block" }}>
+                                    <tr>
+                                      <th style={{ width: "5%" }}>#</th>
+                                      <th style={{ width: "20%" }}>Member</th>
+                                      <th style={{ width: "15%" }}>Phone</th>
+                                      <th style={{ width: "15%" }}>Point</th>
+                                      <th style={{ width: "15%" }}>
+                                        Created date
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody
+                                    style={{
+                                      display: "block",
+                                      overflow: "auto",
+                                      height: "200px"
+                                    }}
+                                  >
+                                    {members.map((eachMember, index) => (
+                                      <tr key={eachMember._id}>
+                                        <td style={{ width: "6%" }}>
+                                          {index + 1}
+                                        </td>
+                                        <td style={{ width: "20%" }}>
+                                          {eachMember.name}
+                                        </td>
+                                        <td style={{ width: "15%" }}>
+                                          {eachMember.phone}
+                                        </td>
+                                        <td style={{ width: "15%" }}>
+                                          {eachMember.point}
+                                        </td>
+                                        <td style={{ width: "15%" }}>
+                                          {this.convertDate(
+                                            eachMember.createAt
+                                          )}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
                           </div>
+                          {/*/.col (left) */}
                         </div>
-                        {/* /.tab-pane */}
                       </div>
+                      {/* /.tab-pane */}
                     </div>
-                    {/* /.tab-content */}
                   </div>
-                  {/* /.nav-tabs-custom */}
+                  {/* /.tab-content */}
                 </div>
+                {/* /.nav-tabs-custom */}
+              </div>
+            </section>
 
-
-              </section >
-
-              {/* /.content */}
-            </React.Fragment >
-          )}
+            {/* /.content */}
+          </React.Fragment>
+        )}
       </Fragment>
     );
   }
@@ -612,9 +719,12 @@ class OrderScreen extends Component {
 
 class ListItem extends React.Component {
   render() {
-    return <li className="list-group-item">
-      <b>{this.props.item.name} </b> x{this.props.item.orderQty} <a className="pull-right">{this.props.item.price}</a>
-    </li>;
+    return (
+      <li className="list-group-item">
+        <b>{this.props.item.name} </b> x{this.props.item.orderQty}{" "}
+        <a className="pull-right">{this.props.item.price}</a>
+      </li>
+    );
   }
 }
 
@@ -636,11 +746,17 @@ const mapStateToProps = state => ({
   user: state.auth.user
 });
 
-export default connect(
-  mapStateToProps,
-  { getProducts, deleteProduct, getSearchMembers, getMembers, addInvoice, addInvoiceDet, getInvoices, showNoti }
-)(OrderScreen);
+export default connect(mapStateToProps, {
+  getProducts,
+  deleteProduct,
+  getSearchMembers,
+  getMembers,
+  addInvoice,
+  addInvoiceDet,
+  getInvoices,
+  showNoti
+})(OrderScreen);
 
 const menuStyle = {
-  display: 'inline-block',
+  display: "inline-block"
 };

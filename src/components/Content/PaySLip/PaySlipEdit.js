@@ -8,11 +8,15 @@ import {
   NotificationManager
 } from "react-notifications";
 import { Link } from "react-router-dom";
+import Select from "react-select";
 
 class PaySlipEdit extends Component {
   state = {
-    idMember: "",
+    idUser: "",
+    fullnameUser: "",
     idSupplier: "",
+    nameSupplier: "",
+    comment: "",
     createddate: new Date(),
     totalAmt: 0,
     _id: "",
@@ -25,19 +29,56 @@ class PaySlipEdit extends Component {
     this.setState({ notiType: "" });
   };
 
+  onChangeSelectedCate = idCategory => {
+    this.setState({
+      idSupplier: idCategory.value,
+      nameSupplier: idCategory.label
+    });
+  };
+
+  tokenConfig = token => {
+    const config = {
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+
+    //Header
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+
+    return config;
+  };
   componentDidMount() {
     const { id } = this.props.match.params;
+    const { token } = this.props.auth;
     axios
-      .get(`/api/payslip/${id}`)
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/payslip/${id}`,
+        this.tokenConfig(token)
+      )
       .then(response => {
+        const { data } = response;
+        const {
+          idUser,
+          idSupplier,
+          createddate,
+          totalAmt,
+          comment,
+          _id
+        } = data;
         if (response.data === null) this.props.history.push("/404");
         else
           this.setState({
-            idMember: response.data.idMember,
-            idSupplier: response.data.idSupplier,
-            createddate: response.data.createddate,
-            totalAmt: response.data.totalAmt,
-            _id: response.data._id
+            idUser: idUser._id,
+            fullnameUser: idUser.fullName,
+            idSupplier: idSupplier._id,
+            nameSupplier: idSupplier.name,
+            createddate,
+            totalAmt,
+            _id,
+            comment
           });
       })
       .catch(error => {
@@ -48,19 +89,32 @@ class PaySlipEdit extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
   handleSubmit = e => {
-    const { _id, idMember, idSupplier, createddate, totalAmt } = this.state;
+    const {
+      _id,
+      idUser,
+      idSupplier,
+      comment,
+      createddate,
+      totalAmt
+    } = this.state;
+    const { token } = this.props.auth;
     e.preventDefault();
     let notiType = "";
     const newPaySlip = {
-      idMember,
+      idUser,
       idSupplier,
       createddate,
+      comment,
       totalAmt,
       _id
     };
 
     axios
-      .put(`/api/payslip/${_id}`, newPaySlip)
+      .put(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/payslip/${_id}`,
+        newPaySlip,
+        this.tokenConfig(token)
+      )
 
       .then(response => {
         if (response.status === 200) {
@@ -87,7 +141,7 @@ class PaySlipEdit extends Component {
     this.props.history.push("/payslip");
   };
   render() {
-    const { _id, idMember, idSupplier, createddate, totalAmt } = this.state;
+    const { _id, fullnameUser, nameSupplier, totalAmt, comment } = this.state;
 
     return (
       <Fragment>
@@ -138,8 +192,10 @@ class PaySlipEdit extends Component {
                           className="form-control"
                           id="inputId"
                           placeholder="Loading..."
-                          defaultValue={_id}
-                          onChange={this.handleChange}
+                          value={_id}
+                          disabled
+                          readOnly
+                          // onChange={this.handleChange}
                         />
                       </div>
                     </div>
@@ -148,18 +204,18 @@ class PaySlipEdit extends Component {
                         htmlFor="inputEmail3"
                         className="col-sm-2 control-label"
                       >
-                        Member
+                        User
                       </label>
                       <div className="col-sm-10">
                         <input
-                          name="idMember"
+                          name="idUser"
                           type="text"
                           id="inputMember"
                           placeholder="Loading..."
                           className="form-control"
-                          defaultValue={idMember}
+                          defaultValue={fullnameUser}
                           disabled
-                          onChange={this.handleChange}
+                          readOnly
                         />
                       </div>
                     </div>
@@ -178,8 +234,9 @@ class PaySlipEdit extends Component {
                           className="form-control"
                           id="inputSupplier"
                           placeholder="Loading..."
-                          defaultValue={idSupplier}
-                          onChange={this.handleChange}
+                          defaultValue={nameSupplier}
+                          readOnly
+                          disabled
                         />
                       </div>
                     </div>
@@ -198,9 +255,29 @@ class PaySlipEdit extends Component {
                           className="form-control"
                           id="inputTotalAmt"
                           placeholder="Loading..."
-                          defaultValue={totalAmt}
-                          onChange={this.handleChange}
+                          value={totalAmt}
                           disabled
+                          readOnly
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label
+                        htmlFor="inputCreateddate"
+                        className="col-sm-2 control-label"
+                      >
+                        Comment:
+                      </label>
+                      <div className="col-sm-10">
+                        <textarea
+                          name="comment"
+                          type="text"
+                          className="form-control"
+                          id="inputTotalAmt"
+                          placeholder="Loading..."
+                          value={comment}
+                          onChange={this.handleChange}
                         />
                       </div>
                     </div>
@@ -229,5 +306,7 @@ class PaySlipEdit extends Component {
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  auth: state.auth
+});
 export default connect(mapStateToProps, { showNoti })(PaySlipEdit);

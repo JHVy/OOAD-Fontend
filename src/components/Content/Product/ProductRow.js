@@ -24,14 +24,14 @@ class ProductRow extends Component {
 
   render() {
     const { product, index } = this.props;
-
+    const { name, idCategory, price } = product;
     return (
       <tr>
         <td>{index + 1}</td>
-        <td>{product.name}</td>
-        <td>{product.idCategory}</td>
-        <td>{product.price}</td>
-        {product.status === 1 ? (<td>Available</td>) : (<td>Inactive</td>)}
+        <td>{name}</td>
+        <td>{idCategory.name}</td>
+        <td>{price}</td>
+        {product.status === 1 ? <td>Available</td> : <td>Inactive</td>}
         <td>
           <div className="btn-group">
             <button

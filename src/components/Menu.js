@@ -36,33 +36,21 @@ class Menu extends Component {
               <li>
                 <Link to="/category">
                   <i className="fa fa-th" /> <span>Category</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/role">
                   <i className="fa fa-th" /> <span>Role</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/member">
                   <i className="fa fa-th" /> <span>Member</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/supplier">
                   <i className="fa fa-th" /> <span>Supplier</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
@@ -84,57 +72,36 @@ class Menu extends Component {
               <li>
                 <Link to="/orderScreen">
                   <i className="fa fa-th" /> <span>Order</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/dailycheck">
                   <i className="fa fa-th" /> <span>Daily Check</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/storageReport">
                   <i className="fa fa-th" /> <span>Storage Report</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/saleReport">
                   <i className="fa fa-th" /> <span>Sale Report</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/invoice">
                   <i className="fa fa-th" /> <span>Invoice</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/user">
                   <i className="fa fa-th" /> <span>User</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/payslip">
                   <i className="fa fa-th" /> <span>Payslip</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li className="treeview">

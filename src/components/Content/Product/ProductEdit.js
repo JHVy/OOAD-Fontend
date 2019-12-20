@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { showNoti } from "../../../actions/notificationActions";
 import "react-notifications/lib/notifications.css";
 import { NotificationContainer } from "react-notifications";
-import { getAllCategories } from "../../../actions/categoryActions";
+
 import axios from "axios";
 import PropTypes from "prop-types";
 import Select from "react-select";
@@ -17,50 +17,41 @@ class ProductEdit extends Component {
   state = {
     name: "",
     idCategory: "",
+    nameCategory: "",
     price: 0,
     linkpic: "",
     status: 1,
     _id: "",
-    listCate: [],
-    listStatus: [{ label: 'Inactive', value: 0 }, { label: 'Available', value: 1 }],
-    categoryLabel: '',
+    options: [],
+    listStatus: [
+      { label: "Inactive", value: 0 },
+      { label: "Available", value: 1 }
+    ],
+
     msg: "",
     notiType: ""
   };
 
   handleClick = () => {
-    this.upload.click()
+    this.upload.click();
   };
   onChangeFile(event) {
     event.stopPropagation();
     event.preventDefault();
     var file = event.target.files[0];
-    this.setState({ linkpic: '../../dist/img/' + file.name });
-  };
-
-  onMenuOpen = () => {
-    this.setState(state => {
-      let listCate = [...state.listCate]
-      if (this.props.category.categories.length === this.state.listCate.length) return;
-      else listCate = [];
-
-      this.props.category.categories.map(el => {
-        listCate.push({ 'value': el._id, 'label': el.name })
-      });
-
-      return {
-        listCate
-      }
-    });
+    this.setState({ linkpic: "../../dist/img/" + file.name });
   }
 
   onChangeSelectedCate = idCategory => {
-    this.setState({ idCategory: idCategory.value, categoryLabel: idCategory.label })
-  }
+    this.setState({
+      idCategory: idCategory.value,
+      nameCategory: idCategory.label
+    });
+  };
 
   onChangeSelectedStatus = status => {
-    this.setState({ status: status.value })
-  }
+    this.setState({ status: status.value });
+  };
 
   createNotification = () => {
     const { notiType } = this.state;
@@ -69,8 +60,22 @@ class ProductEdit extends Component {
   };
 
   componentDidMount() {
-    this.props.getAllCategories('');
     const { id } = this.props.match.params;
+
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/category/getall/category`,
+        this.tokenConfig(this.props.auth.token)
+      )
+      .then(response => {
+        let tempArr = [];
+
+        response.data.map(eachRes => {
+          tempArr.push({ label: eachRes.name, value: eachRes._id });
+        });
+        this.setState({ options: tempArr });
+      })
+      .catch(er => console.log(er.response));
 
     axios
       .get(
@@ -81,30 +86,17 @@ class ProductEdit extends Component {
         if (response.data === null) this.props.history.push("/404");
         const { _id, name, idCategory, price, linkpic, status } = response.data;
 
-        //get category name by id
-        axios
-          .get(
-            `${process.env.REACT_APP_BACKEND_HOST}/api/category/${response.data.idCategory}`,
-            this.tokenConfig(this.props.auth.token)
-          )
-          .then(response => {
-            if (response.data === null) this.setState({ categoryLabel: '' });
-            this.setState({ categoryLabel: response.data.name });
-          })
-          .catch(er => console.log(er.response));
-        //get category name by id
-
         this.setState({
           _id,
           name,
-          idCategory,
+          idCategory: idCategory._id,
+          nameCategory: idCategory.name,
           price,
           linkpic,
-          status,
+          status
         });
       })
       .catch(er => console.log(er.response));
-
   }
 
   tokenConfig = token => {
@@ -140,8 +132,9 @@ class ProductEdit extends Component {
       idCategory,
       price,
       linkpic,
-      status,
+      status
     };
+    console.log(newProduct);
 
     axios
       .put(
@@ -155,7 +148,7 @@ class ProductEdit extends Component {
           this.setState({ notiType: "success" });
 
           setTimeout(
-            function () {
+            function() {
               //Start the timer
               window.location.replace("/product");
             }.bind(this),
@@ -177,7 +170,17 @@ class ProductEdit extends Component {
   };
 
   render() {
-    const { _id, idCategory, price, linkpic, status, listCate, listStatus, categoryLabel } = this.state;
+    const {
+      _id,
+      idCategory,
+      nameCategory,
+      price,
+      name,
+      linkpic,
+      options,
+      status,
+      listStatus
+    } = this.state;
 
     return (
       <Fragment>
@@ -241,7 +244,24 @@ class ProductEdit extends Component {
                         />
                       </div>
                     </div>
-
+                    <div className="form-group">
+                      <label
+                        htmlFor="inputPassword3"
+                        className="col-sm-2 control-label"
+                      >
+                        Name
+                      </label>
+                      <div className="col-sm-10">
+                        <input
+                          name="name"
+                          type="text"
+                          className="form-control"
+                          placeholder="Loading..."
+                          value={name}
+                          onChange={this.handleChange}
+                        />
+                      </div>
+                    </div>
                     <div className="form-group">
                       <label
                         htmlFor="inputPassword3"
@@ -252,16 +272,14 @@ class ProductEdit extends Component {
                       <div className="col-sm-10">
                         <Select
                           name="idCategory"
-                          onMenuOpen={this.onMenuOpen}
                           onChange={this.onChangeSelectedCate}
                           isSearchable={true}
-                          options={listCate}
+                          options={options}
                           value={{
                             value: idCategory,
-                            label: categoryLabel
-                          }} >
-
-                        </Select>
+                            label: nameCategory
+                          }}
+                        ></Select>
                       </div>
                     </div>
 
@@ -290,7 +308,7 @@ class ProductEdit extends Component {
                       >
                         Link Photo
                       </label>
-                      <div style={{ display: 'inline-block' }}>
+                      <div style={{ display: "inline-block" }}>
                         <div className="col-sm-10">
                           <input
                             name="linkpic"
@@ -302,9 +320,9 @@ class ProductEdit extends Component {
                           />
                           <input
                             type="file"
-                            ref={(ref) => this.upload = "ref"}
+                            ref={ref => (this.upload = "ref")}
                             onChange={this.onChangeFile.bind(this)}
-                          //value={linkpic}
+                            //value={linkpic}
                           />
                         </div>
                       </div>
@@ -324,11 +342,11 @@ class ProductEdit extends Component {
                           options={listStatus}
                           value={{
                             value: status,
-                            label: status === 1 ? 'Available' : 'Inactive'
-                          }} >
+                            label: status === 1 ? "Available" : "Inactive"
+                          }}
+                        >
                           >
                         </Select>
-
                       </div>
                     </div>
                   </div>
@@ -356,14 +374,12 @@ class ProductEdit extends Component {
   }
 }
 
-ProductEdit.propTypes = {
-  getAllCategories: PropTypes.func.isRequired
-};
+ProductEdit.propTypes = {};
 
 const mapStateToProps = state => {
   return {
     auth: state.auth,
-    category: state.category,
+    category: state.category
   };
 };
-export default connect(mapStateToProps, { showNoti, getAllCategories })(ProductEdit);
+export default connect(mapStateToProps, { showNoti })(ProductEdit);
