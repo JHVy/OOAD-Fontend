@@ -10,6 +10,9 @@ import Product from "./components/Content/Product/Product";
 import ProductEdit from "./components/Content/Product/ProductEdit";
 import PaySlip from "./components/Content/PaySlip/PaySlip";
 import PaySlipEdit from "./components/Content/PaySlip/PaySlipEdit";
+import MaterialReceiptNoteAdd from "./components/Content/MaterialReceiptNote//MaterialReceiptNoteAdd";
+import MaterialReceiptNote from "./components/Content/MaterialReceiptNote//MaterialReceiptNote";
+import MaterialReceiptNoteEdit from "./components/Content/MaterialReceiptNote/MaterialReceiptNoteEdit";
 import Invoice from "./components/Content/OrderAndInvoices/Invoice";
 import StorageReport from "./components/Content/Report/StorageReport";
 import SaleReport from "./components/Content/Report/SaleReport";
@@ -243,18 +246,25 @@ class CoffeShop extends Component {
                         path="/product/edit/:id"
                         component={ProductEdit}
                       />
+                      <PrivateRoute exact path="/materialReceiptNoteAdd" role={roles.materialReceiptNote} token={token} component={MaterialReceiptNoteAdd}></PrivateRoute>
+                      <PrivateRoute exact path="/materialReceiptNote" role={roles.materialReceiptNote} token={token} component={MaterialReceiptNote}></PrivateRoute>
+                      <PrivateRoute
+                        role={roles.materialReceiptNote} token={token}
+                        exact
+                        path="/materialReceiptNote/edit/:id"
+                        component={MaterialReceiptNoteEdit}
+                      />
                       <Route
                         exact
                         path="/orderScreen"
                         component={OrderScreen}
                       ></Route>
-                      <Route path="*" render={() => <Redirect to="/404" />} />
-
                       <Route
                         exact
                         path="/saleReport"
                         component={SaleReport}
                       ></Route>
+                      <Route path="*" render={() => <Redirect to="/404" />} />
                     </Switch>
                   </div>
                   <Footer />

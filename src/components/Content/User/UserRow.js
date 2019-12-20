@@ -18,8 +18,8 @@ class UserRow extends Component {
       <tr>
         <td>{index + 1}</td>
         <td>{idRole.name}</td>
-        <td>{user.username}</td>
-        <td>{user.phoneNumber}</td>
+        <td>{username}</td>
+        <td>{phoneNumber}</td>
         {/* <td>{user.address}</td> */}
         <td>
           <div className="btn-group">

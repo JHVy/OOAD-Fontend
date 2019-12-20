@@ -25,6 +25,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         materials: action.payload,
+        isLoaded: true,
       };
 
     case DELETE_MATERIAL:
