@@ -130,7 +130,7 @@ class MaterialReceiptNote extends Component {
               {/* Content Header (Page header) */}
               <section className="content-header">
                 <h1>
-                  Member
+                  Material Receipt Note
                 {/* <small>Preview</small> */}
                 </h1>
                 <ol className="breadcrumb">
@@ -139,7 +139,7 @@ class MaterialReceiptNote extends Component {
                       <i className="fa fa-dashboard" /> Home
                   </Link>
                   </li>
-                  <li className="active">Member</li>
+                  <li className="active">Material Receipt Note</li>
                 </ol>
               </section>
               {/* Main content */}
@@ -235,7 +235,7 @@ class MaterialReceiptNote extends Component {
                                 <tbody>
                                   {materialReceiptNotes.map((el, index) => (
                                     <MaterialReceiptNoteRow
-                                      onHandler={this.handler}
+                                    
                                       history={this.props.history}
                                       key={el._id}
                                       materialReceiptNote={el}

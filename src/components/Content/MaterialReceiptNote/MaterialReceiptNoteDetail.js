@@ -3,17 +3,30 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { showNoti } from "../../../actions/notificationActions";
-
-class MaterialEdit extends Component {
+import MaterialReceiptNoteDetailRow from "./MaterialReceiptNoteDetailRow";
+class MaterialReceiptNoteDetail extends Component {
   state = {
-    name: "",
-    quantity: 0,
-    _id: ""
+    details: []
   };
   componentDidMount() {
     const { id } = this.props.match.params;
-
-
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_HOST}/api/receiptdet/${id}`,
+        this.tokenConfig(this.props.auth.token)
+      )
+      .then(response => {
+        if (!response.data) this.props.history.push("/404");
+        else {
+          // const { name, quantity, _id } = response.data;
+          this.setState({
+            details: response.data
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error.response);
+      });
   }
   tokenConfig = token => {
     const config = {
@@ -28,40 +41,23 @@ class MaterialEdit extends Component {
 
     return config;
   };
-  handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
-  handleSubmit = e => {
-    const { _id, name, quantity } = this.state;
-    e.preventDefault();
 
-    const newMaterial = {
-      name,
-      quantity,
-      _id
-    };
-
-    axios
-      .put(`${process.env.REACT_APP_BACKEND_HOST}/api/material/${_id}`, newMaterial,
-        this.tokenConfig(this.props.auth.token))
-
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error.response);
-      });
-
-    //Quay về trang chính
-    this.props.history.push("/material");
+  renderMaterialReceiptNoteDetailRow = () => {
+    const { details } = this.state;
+    return details.map((eachDetail, index) => (
+      <MaterialReceiptNoteDetailRow
+        key={eachDetail._id}
+        detail={eachDetail}
+        index={index}
+      />
+    ));
   };
 
   handleCancel = e => {
-    this.props.history.push("/material");
+    this.props.history.push("/materialReceiptNote");
   };
   render() {
-    const { name, quantity, _id } = this.state;
-    console.log(quantity);
+    const { details } = this.state;
 
     return (
       <Fragment>
@@ -78,9 +74,9 @@ class MaterialEdit extends Component {
               </Link>
             </li>
             <li>
-              <Link to="/material">Material</Link>
+              <Link to="/material">Material Receipt Note Details</Link>
             </li>
-            <li className="active">Edit</li>
+            <li className="active">Details</li>
           </ol>
         </section>
         {/* Main content */}
@@ -89,7 +85,7 @@ class MaterialEdit extends Component {
             <div className="col-md-6">
               <div className="box box-info">
                 <div className="box-header with-border">
-                  <h3 className="box-title">Material Edit Form</h3>
+                  <h3 className="box-title">Material Receipt Note Details</h3>
                 </div>
                 {/* /.box-header */}
                 {/* form start */}
@@ -104,30 +100,18 @@ class MaterialEdit extends Component {
                           <thead>
                             <tr>
                               <th style={{ width: "5%" }}>#</th>
-                              <th style={{ width: "20%" }}>Supplier</th>
-                              <th style={{ width: "15%" }}>User</th>
-                              <th style={{ width: "15%" }}>Created date</th>
+                              <th style={{ width: "20%" }}>Material</th>
+                              <th style={{ width: "15%" }}>Quantity</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {/* {materialReceiptNotes.map((el, index) => (
-                              <MaterialReceiptNoteDetRow
-                                onHandler={this.handler}
-                                history={this.props.history}
-                                key={el._id}
-                                det={el}
-                                index={index}
-                                isLoaded={isLoaded}
-
-                              />
-                            ))} */}
+                            {this.renderMaterialReceiptNoteDetailRow()}
                           </tbody>
                           <tfoot>
                             <tr>
                               <th>#</th>
-                              <th>Supplier</th>
-                              <th>User</th>
-                              <th>Created date</th>
+                              <th>Material</th>
+                              <th>Quantity</th>
                             </tr>
                           </tfoot>
                         </table>
@@ -163,4 +147,6 @@ const mapStateToProps = state => {
     auth: state.auth
   };
 };
-export default connect(mapStateToProps, { showNoti })(MaterialEdit);
+export default connect(mapStateToProps, { showNoti })(
+  MaterialReceiptNoteDetail
+);

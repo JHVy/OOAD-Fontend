@@ -3,7 +3,7 @@ import {
   ADD_MATERIALRECEIPTNOTE,
   DELETE_MATERIALRECEIPTNOTE,
   GET_ALL_MATERIALRECEIPTNOTES,
-  UPDATE_MATERIALRECEIPTNOTE,
+  UPDATE_MATERIALRECEIPTNOTE
 } from "./types";
 import axios from "axios";
 import { tokenConfig } from "./authActions";
@@ -17,8 +17,14 @@ export const getMaterialReceiptNotes = (show = 10, page = 1, query) => (
   if (query === "") newQuery = "undefined";
   else newQuery = query;
   axios
-    .get(`${process.env.REACT_APP_BACKEND_HOST}/api/receipt/${show}/${page}/${newQuery}`, tokenConfig(getState))
-    .then(response => dispatch({ type: GET_MATERIALRECEIPTNOTES, payload: response.data }))
+    .get(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/receipt/${show}/${page}/${newQuery}`,
+      tokenConfig(getState)
+    )
+    .then(response => {
+      dispatch({ type: GET_MATERIALRECEIPTNOTES, payload: response.data });
+      console.log(response.data);
+    })
     .catch(er => console.log(er.response));
 };
 
@@ -39,17 +45,29 @@ export const getAllMaterialReceiptNotes = query => (dispatch, getState) => {
 };
 
 export const deleteMaterialReceiptNote = id => (dispatch, getState) => {
-  axios.delete(`${process.env.REACT_APP_BACKEND_HOST}/api/receipt/${id}`, tokenConfig(getState)).then(response => {
-    dispatch({
-      type: DELETE_MATERIALRECEIPTNOTE,
-      payload: response.data
+  axios
+    .delete(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/receipt/${id}`,
+      tokenConfig(getState)
+    )
+    .then(response => {
+      dispatch({
+        type: DELETE_MATERIALRECEIPTNOTE,
+        payload: response.data
+      });
     });
-  });
 };
 
-export const addMaterialReceiptNote = newMaterialReceiptNote => (dispatch, getState) => {
+export const addMaterialReceiptNote = newMaterialReceiptNote => (
+  dispatch,
+  getState
+) => {
   axios
-    .post(`${process.env.REACT_APP_BACKEND_HOST}/api/receipt/`, newMaterialReceiptNote, tokenConfig(getState))
+    .post(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/receipt/`,
+      newMaterialReceiptNote,
+      tokenConfig(getState)
+    )
     .then(response => {
       if (newMaterialReceiptNote._id instanceof mongoose.Types.ObjectId) {
         newMaterialReceiptNote._id = newMaterialReceiptNote._id.toString();
@@ -63,7 +81,10 @@ export const addMaterialReceiptNote = newMaterialReceiptNote => (dispatch, getSt
     });
 };
 
-export const updateMaterialReceiptNote = newMaterialReceiptNote => (dispatch, getState) => {
+export const updateMaterialReceiptNote = newMaterialReceiptNote => (
+  dispatch,
+  getState
+) => {
   axios
     .put(
       `${process.env.REACT_APP_BACKEND_HOST}/api/receipt/${newMaterialReceiptNote._id}`,

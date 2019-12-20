@@ -4,7 +4,7 @@ import PaySlipRow from "./PaySlipRow";
 import { connect } from "react-redux";
 import { getPaySlips } from "../../../actions/payslipActions";
 import { showNoti } from "../../../actions/notificationActions";
-import "react-notifications/lib/notifications.css";
+// import "react-notifications/lib/notification.css";
 import {
   NotificationContainer,
   NotificationManager

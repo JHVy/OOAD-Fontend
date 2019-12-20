@@ -19,21 +19,23 @@ class MaterialReceiptNoteRow extends Component {
     return year + "-" + month + "-" + dt;
   };
   handleEdit = id => {
-    this.props.history.push(`/materialReceiptNote/edit/${id}`);
+    this.props.history.push(`/materialReceiptNote/details/${id}`);
   };
   handleDelete = id => {
     this.props.deleteMember(id);
   };
 
   render() {
-    const { idSupplier, idUser, createddate, _id } = this.props.materialReceiptNote;
-    let index = this.props.index
+    const { materialReceiptNote, index } = this.props;
+    const { idSupplier, idUser, createddate, _id } = materialReceiptNote;
+    const { name } = idSupplier;
+    const { fullName } = idUser;
 
     return (
       <tr>
         <td>{index + 1}</td>
-        <td>{idSupplier}</td>
-        <td>{idUser}</td>
+        <td>{name}</td>
+        <td>{fullName}</td>
         <td>{this.convertDate(createddate)}</td>
         <td>
           <div className="btn-group">
@@ -59,4 +61,6 @@ class MaterialReceiptNoteRow extends Component {
   }
 }
 
-export default connect(null, { deleteMaterialReceiptNote })(MaterialReceiptNoteRow);
+export default connect(null, { deleteMaterialReceiptNote })(
+  MaterialReceiptNoteRow
+);
