@@ -26,6 +26,7 @@ class PaySlipRow extends Component {
   render() {
     const { payslip, index } = this.props;
     const { idUser, idSupplier, createddate, totalAmt } = payslip;
+    console.log(idUser);
 
     return (
       <tr>
