@@ -104,7 +104,7 @@ class DailyCheck extends Component {
 
             const newItem = {
                 _id: mongoose.Types.ObjectId(),
-                idMember: 'tam test',
+                idUser: this.props.auth.user._id,
                 idMaterial: el.materialId,
                 createddate: new Date(),
                 quantity: el.quantity
@@ -388,6 +388,7 @@ const mapStateToProps = state => ({
     isLoaded: state.material.isLoaded,
     storagereport: state.storagereport,
     material: state.material,
+    auth: state.auth
 });
 
 export default connect(
