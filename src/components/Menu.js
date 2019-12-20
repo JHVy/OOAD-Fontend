@@ -56,33 +56,21 @@ class Menu extends Component {
               <li>
                 <Link to="/product">
                   <i className="fa fa-th" /> <span>Product</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/material">
                   <i className="fa fa-th" /> <span>Material</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/materialReceiptNoteAdd">
                   <i className="fa fa-th" /> <span>Material Receipt Board</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link to="/materialReceiptNote">
                   <i className="fa fa-th" /> <span>Material Receipt</span>
-                  <span className="pull-right-container">
-                    <small className="label pull-right bg-green">new</small>
-                  </span>
                 </Link>
               </li>
               <li>
