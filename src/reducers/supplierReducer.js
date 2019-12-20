@@ -2,7 +2,7 @@ import {
   GET_SUPPLIERS,
   ADD_SUPPLIER,
   DELETE_SUPPLIER,
-  GET_SUPPLIER,
+  GET_ALL_SUPPLIERS,
   UPDATE_SUPPLIER
 } from "../actions/types";
 
@@ -12,7 +12,7 @@ const initialState = {
   isLoaded: false
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case GET_SUPPLIERS:
       return {
@@ -20,6 +20,14 @@ export default function(state = initialState, action) {
         suppliers: action.payload,
         isLoaded: true
       };
+
+    case GET_ALL_SUPPLIERS:
+      return {
+        ...state,
+        suppliers: action.payload,
+        isLoaded: true,
+      };
+
     case DELETE_SUPPLIER:
       return {
         ...state,

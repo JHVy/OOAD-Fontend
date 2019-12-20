@@ -2,7 +2,7 @@ import {
   GET_SUPPLIERS,
   ADD_SUPPLIER,
   DELETE_SUPPLIER,
-  GET_SUPPLIER,
+  GET_ALL_SUPPLIERS,
   UPDATE_SUPPLIER
 } from "./types";
 import axios from "axios";
@@ -25,6 +25,22 @@ export const getSuppliers = (show = 5, page = 1, query) => (
     )
 
     .then(response => dispatch({ type: GET_SUPPLIERS, payload: response.data }))
+    .catch(er => console.log(er.response));
+};
+
+export const getAllSuppliers = query => (dispatch, getState) => {
+  let newQuery = "";
+  if (query === "") newQuery = "undefined";
+  else newQuery = query;
+
+  axios
+    .get(
+      `${process.env.REACT_APP_BACKEND_HOST}/api/supplier/getall/${newQuery}`,
+      tokenConfig(getState)
+    )
+    .then(response =>
+      dispatch({ type: GET_ALL_SUPPLIERS, payload: response.data })
+    )
     .catch(er => console.log(er.response));
 };
 

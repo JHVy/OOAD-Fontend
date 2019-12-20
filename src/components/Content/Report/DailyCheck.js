@@ -225,7 +225,7 @@ class DailyCheck extends Component {
                             {/* Content Header (Page header) */}
                             <section className="content-header">
                                 <h1>
-                                    Storage Report
+                                    Daily Check
                                 {/* <small>Preview</small> */}
                                 </h1>
                                 <ol className="breadcrumb">
@@ -300,22 +300,24 @@ class DailyCheck extends Component {
                                                                     {this.state.rows.map((el, index) => (
                                                                         <tr>
                                                                             <td>{index + 1}</td>
-                                                                            <Select
-                                                                                onMenuOpen={() => this.onMenuOpen(el.materialId)}
-                                                                                onChange={(e) => this.onSelect(index, e)}
-                                                                                styles={{
-                                                                                    control: (base, state) => ({
-                                                                                        ...base,
-                                                                                        borderColor: 'transparent',
-                                                                                    }),
-                                                                                }}
-                                                                                value={{
-                                                                                    value: el.materialId,
-                                                                                    label: el.name
-                                                                                }}
-                                                                                options={el.options}
-                                                                                isOptionDisabled={el => el.disabled === true}
-                                                                            />
+                                                                            <td>
+                                                                                <Select
+                                                                                    onMenuOpen={() => this.onMenuOpen(el.materialId)}
+                                                                                    onChange={(e) => this.onSelect(index, e)}
+                                                                                    styles={{
+                                                                                        control: (base, state) => ({
+                                                                                            ...base,
+                                                                                            borderColor: 'transparent',
+                                                                                        }),
+                                                                                    }}
+                                                                                    value={{
+                                                                                        value: el.materialId,
+                                                                                        label: el.name
+                                                                                    }}
+                                                                                    options={el.options}
+                                                                                    isOptionDisabled={el => el.disabled === true}
+                                                                                />
+                                                                            </td>
                                                                             <td bgcolor="#f4f4f4">{el.quantitydb}</td>
                                                                             <td onBlur={e => this.handleClick(e, index)} id="used-qty" bgcolor='#FFFFFF' style={inputField} contentEditable="true"></td>
                                                                             <td>{this.convertDate(el.createAt)}</td>

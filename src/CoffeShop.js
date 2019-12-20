@@ -10,6 +10,9 @@ import Product from "./components/Content/Product/Product";
 import ProductEdit from "./components/Content/Product/ProductEdit";
 import PaySlip from "./components/Content/PaySlip/PaySlip";
 import PaySlipEdit from "./components/Content/PaySlip/PaySlipEdit";
+import MaterialReceiptNoteAdd from "./components/Content/MaterialReceiptNote//MaterialReceiptNoteAdd";
+import MaterialReceiptNote from "./components/Content/MaterialReceiptNote//MaterialReceiptNote";
+import MaterialReceiptNoteDetail from "./components/Content/MaterialReceiptNote/MaterialReceiptNoteDetail";
 import Invoice from "./components/Content/OrderAndInvoices/Invoice";
 import StorageReport from "./components/Content/Report/StorageReport";
 import SaleReport from "./components/Content/Report/SaleReport";
@@ -76,201 +79,222 @@ class CoffeShop extends Component {
         {!this.props.isLoaded ? (
           <Loader></Loader>
         ) : (
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={() => {
-                  return !isAuthenticated ? (
-                    <Redirect to="/login" />
-                  ) : (
-                      <Redirect to="/home" />
-                    );
-                }}
-              />
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={() => {
+                return !isAuthenticated ? (
+                  <Redirect to="/login" />
+                ) : (
+                  <Redirect to="/home" />
+                );
+              }}
+            />
 
-              <Route
-                exact
-                path="/login"
-                render={() => {
-                  return !isAuthenticated ? <Login /> : <Redirect to="/home" />;
-                }}
-              />
-              {isAuthenticated && (
-                <Fragment>
-                  <Header />
-                  <Menu />
+            <Route
+              exact
+              path="/login"
+              render={() => {
+                return !isAuthenticated ? <Login /> : <Redirect to="/home" />;
+              }}
+            />
+            {isAuthenticated && (
+              <Fragment>
+                <Header />
+                <Menu />
 
-                  <div className="content-wrapper">
-                    <Switch>
-                      <Route exact path="/home">
-                        <Home />
-                      </Route>
-                      <Route path="/404">
-                        <ErrorPage />
-                      </Route>
-                      <Route path="/403">
-                        <NoPermissionPage />
-                      </Route>
-                      <PrivateRoute
-                        exact
-                        path="/category"
-                        component={Category}
-                        role={roles.category}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/role"
-                        component={Role}
-                        role={roles.role}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/supplier"
-                        component={Supplier}
-                        role={roles.supplier}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/member"
-                        component={Member}
-                        role={roles.member}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/payslip"
-                        component={PaySlip}
-                        role={roles.payslip}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/user"
-                        component={User}
-                        role={roles.user}
-                        token={token}
-                      />
-                      <PrivateRoute
-                        exact
-                        path="/invoice"
-                        component={Invoice}
-                        role={roles.invoice}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/user/edit/:id"
-                        component={UserEdit}
-                        role={roles.user}
-                        token={token}
-                      />
-                      <PrivateRoute
-                        exact
-                        path="/role/edit/:id"
-                        component={RoleEdit}
-                        role={roles.role}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/category/edit/:id"
-                        component={CategoryEdit}
-                        role={roles.category}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/supplier/edit/:id"
-                        component={SupplierEdit}
-                        role={roles.supplier}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/member/edit/:id"
-                        component={MemberEdit}
-                        role={roles.member}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/payslip/edit/:id"
-                        component={PaySlipEdit}
-                        role={roles.payslip}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/invoice/detail/:id"
-                        component={InvoiceDet}
-                        role={roles.invoice}
-                        token={token}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        exact
-                        path="/dailycheck"
-                        component={DailyCheck}
-                        role={roles.material}
-                        token={token}
-                      />
-                      <PrivateRoute
-                        exact
-                        path="/storageReport"
-                        component={StorageReport}
-                        role={roles.material}
-                        token={token}
-                      />
-                      <PrivateRoute
-                        exact
-                        role={roles.material}
-                        token={token}
-                        path="/material"
-                        component={Material}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        role={roles.material}
-                        token={token}
-                        exact
-                        path="/material/edit/:id"
-                        component={MaterialEdit}
-                      />
-                      <PrivateRoute
-                        exact
-                        path="/product"
-                        role={roles.product}
-                        token={token}
-                        component={Product}
-                      ></PrivateRoute>
-                      <PrivateRoute
-                        role={roles.product}
-                        token={token}
-                        exact
-                        path="/product/edit/:id"
-                        component={ProductEdit}
-                      />
-                      <Route
-                        exact
-                        path="/orderScreen"
-                        component={OrderScreen}
-                      ></Route>{" "}
-                      <Route
-                        exact
-                        path="/saleReport"
-                        component={SaleReport}
-                      ></Route>
-                      <Route path="*" render={() => <Redirect to="/404" />} />
-                    </Switch>
-                  </div>
-                  <Footer />
-                </Fragment>
-              )}
-              <Route path="*" render={() => <Redirect to="/login" />} />
-            </Switch>
-          )}
+                <div className="content-wrapper">
+                  <Switch>
+                    <Route exact path="/home">
+                      <Home />
+                    </Route>
+                    <Route path="/404">
+                      <ErrorPage />
+                    </Route>
+                    <Route path="/403">
+                      <NoPermissionPage />
+                    </Route>
+                    <PrivateRoute
+                      exact
+                      path="/category"
+                      component={Category}
+                      role={roles.category}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/role"
+                      component={Role}
+                      role={roles.role}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/supplier"
+                      component={Supplier}
+                      role={roles.supplier}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/member"
+                      component={Member}
+                      role={roles.member}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/payslip"
+                      component={PaySlip}
+                      role={roles.payslip}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/user"
+                      component={User}
+                      role={roles.user}
+                      token={token}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/invoice"
+                      component={Invoice}
+                      role={roles.invoice}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/user/edit/:id"
+                      component={UserEdit}
+                      role={roles.user}
+                      token={token}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/role/edit/:id"
+                      component={RoleEdit}
+                      role={roles.role}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/category/edit/:id"
+                      component={CategoryEdit}
+                      role={roles.category}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/supplier/edit/:id"
+                      component={SupplierEdit}
+                      role={roles.supplier}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/member/edit/:id"
+                      component={MemberEdit}
+                      role={roles.member}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/payslip/edit/:id"
+                      component={PaySlipEdit}
+                      role={roles.payslip}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/invoice/detail/:id"
+                      component={InvoiceDet}
+                      role={roles.invoice}
+                      token={token}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/dailycheck"
+                      component={DailyCheck}
+                      role={roles.material}
+                      token={token}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/storageReport"
+                      component={StorageReport}
+                      role={roles.material}
+                      token={token}
+                    />
+                    <PrivateRoute
+                      exact
+                      role={roles.material}
+                      token={token}
+                      path="/material"
+                      component={Material}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      role={roles.material}
+                      token={token}
+                      exact
+                      path="/material/edit/:id"
+                      component={MaterialEdit}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/product"
+                      role={roles.product}
+                      token={token}
+                      component={Product}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      role={roles.product}
+                      token={token}
+                      exact
+                      path="/product/edit/:id"
+                      component={ProductEdit}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/materialReceiptNoteAdd"
+                      role={roles.materialReceiptNote}
+                      token={token}
+                      component={MaterialReceiptNoteAdd}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      exact
+                      path="/materialReceiptNote"
+                      role={roles.materialReceiptNote}
+                      token={token}
+                      component={MaterialReceiptNote}
+                    ></PrivateRoute>
+                    <PrivateRoute
+                      role={roles.materialReceiptNote}
+                      token={token}
+                      exact
+                      path="/materialReceiptNote/details/:id"
+                      component={MaterialReceiptNoteDetail}
+                    />
+                    <Route
+                      exact
+                      path="/orderScreen"
+                      component={OrderScreen}
+                    ></Route>{" "}
+                    <Route
+                      exact
+                      path="/saleReport"
+                      component={SaleReport}
+                    ></Route>
+                    <Route path="*" render={() => <Redirect to="/404" />} />
+                  </Switch>
+                </div>
+                <Footer />
+              </Fragment>
+            )}
+            <Route path="*" render={() => <Redirect to="/login" />} />
+          </Switch>
+        )}
       </Fragment>
     );
   }

@@ -13,7 +13,6 @@ class SupplierModal extends Component {
     address: "",
     msg: ""
   };
-
   // validate
   validatePhone(phone) {
     return new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g).test(phone); // sdt theo chuan moi va check dau so

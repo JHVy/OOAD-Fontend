@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { addPaySlip } from "../../../actions/payslipActions";
 import { showNoti } from "../../../actions/notificationActions";
 
-import "react-notifications/lib/notifications.css";
+// import "react-notifications/lib/notifications.css";
 import Select from "react-select";
 import {
   NotificationContainer,
