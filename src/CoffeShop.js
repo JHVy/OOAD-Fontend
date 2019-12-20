@@ -37,6 +37,7 @@ import User from "./components/Content/User/User";
 import UserEdit from "./components/Content/User/UserEdit";
 import { PrivateRoute } from "./components/PrivateRoute";
 import NoPermissionPage from "./components/Content/ErrorPage/NoPermissionPage";
+import Help from "./components/Content/Help/Help";
 
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
@@ -280,12 +281,13 @@ class CoffeShop extends Component {
                       exact
                       path="/orderScreen"
                       component={OrderScreen}
-                    ></Route>{" "}
+                    ></Route>
                     <Route
                       exact
                       path="/saleReport"
                       component={SaleReport}
                     ></Route>
+                    <Route exact path="/help" component={Help}></Route>
                     <Route path="*" render={() => <Redirect to="/404" />} />
                   </Switch>
                 </div>
