@@ -93,13 +93,12 @@ class MemberEdit extends Component {
         newMember,
         this.tokenConfig(this.props.auth.token)
       )
-
       .then(response => {
         if (response.status === 200) {
           this.setState({ notiType: "success" });
 
           setTimeout(
-            function() {
+            function () {
               //Start the timer
               window.location.replace("/member");
             }.bind(this),

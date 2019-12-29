@@ -1,47 +1,53 @@
 import React, { Component, Fragment } from "react";
-import InvoiceRow from "./InvoiceRow";
+import ParameterModal from "./ParameterModal";
+import ParameterRow from "./ParameterRow";
 import { connect } from "react-redux";
-import { getInvoices, deleteInvoice } from "../../../actions/invoiceActions";
+import { getParameters } from "../../../actions/parameterActions";
 import PropTypes from "prop-types";
-import Loader from "react-loader";
 import axios from "axios";
+import Loader from "react-loader";
+import { Link } from "react-router-dom";
 
-class Invoice extends Component {
+const mapStateToProps = state => ({
+  parameters: state.parameter.parameters,
+  isLoaded: state.parameter.isLoaded
+});
+
+class Parameter extends Component {
   state = {
     sort: [{ value: "5" }, { value: "10" }, { value: "20" }],
     select: "5",
     currentPage: 1,
     pages: [],
     totalDocuments: 0,
-    query: "",
-
+    query: ""
   };
 
   resetState = () => {
     this.setState({ select: "5", currentPage: 1, query: "" });
   };
-
   componentDidMount() {
     const { select, currentPage, query } = this.state;
     this.getTotalDocuments();
+
     this.getPages();
-    this.props.getInvoices(select, currentPage, query);
+
+    this.props.getParameters(select, currentPage, query);
   }
 
   getTotalDocuments = () => {
     const { query } = this.state;
-    console.log(query);
+
     let newQuery = "";
     if (query === "") newQuery = "undefined";
     else newQuery = query;
 
     axios
       .get(
-        `${process.env.REACT_APP_BACKEND_HOST}/api/invoice/count/${newQuery}`
+        `${process.env.REACT_APP_BACKEND_HOST}/api/parameter/count/${newQuery}`
       )
       .then(response => {
         this.setState({ totalDocuments: response.data });
-        console.log(response.data);
       })
       .catch(er => {
         console.log(er.response);
@@ -50,14 +56,13 @@ class Invoice extends Component {
 
   getPages = () => {
     const { select, query } = this.state;
-    console.log(query);
     let newQuery = "";
     if (query === "") newQuery = "undefined";
     else newQuery = query;
 
     axios
       .get(
-        `${process.env.REACT_APP_BACKEND_HOST}/api/invoice/count/${newQuery}`
+        `${process.env.REACT_APP_BACKEND_HOST}/api/parameter/count/${newQuery}`
       )
       .then(response => {
         let pages = Math.floor(response.data / select);
@@ -77,19 +82,63 @@ class Invoice extends Component {
   };
 
   handleOnChange = e => {
+    console.log(typeof e.target.name + " " + e.target.name);
+    e.persist();
     this.setState({ [e.target.name]: e.target.value }, () => {
-      const { select, currentPage, query } = this.state;
-      this.props.getInvoices(select, currentPage, query);
-      this.getPages();
-      this.getTotalDocuments();
+      if (e.target.name === "query") {
+        this.setState({ currentPage: 1 }, () => {
+          this.rerenderPage();
+        });
+      } else {
+        this.rerenderPage();
+      }
     });
   };
 
+  rerenderPage = () => {
+    const { select, currentPage, query } = this.state;
+    this.props.getParameters(select, currentPage, query);
+    this.getPages();
+    this.getTotalDocuments();
+  };
+
+  renderParameters = () => {
+    const { parameters } = this.props;
+    return parameters.map((eachParameter, index) => (
+      <ParameterRow
+        history={this.props.history}
+        key={eachParameter._id}
+        parameter={eachParameter}
+        index={index}
+      // deleteParameter={this.props.deleteParameter}
+      />
+    ));
+  };
   handleChoosePage = e => {
     this.setState({ currentPage: e }, () => {
       const { select, currentPage, query } = this.state;
-      this.props.getInvoices(select, currentPage, query);
+      this.props.getParameters(select, currentPage, query);
     });
+  };
+
+  renderSelect = () => {
+    const { sort, select } = this.state;
+    return (
+      <select
+        onChange={this.handleOnChange}
+        name="select"
+        aria-controls="example1"
+        style={{ margin: "0px 5px" }}
+        className="form-control input-sm"
+        value={select}
+      >
+        {sort.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.value}
+          </option>
+        ))}
+      </select>
+    );
   };
 
   renderPageButtons = () => {
@@ -105,11 +154,10 @@ class Invoice extends Component {
         }
       >
         <a
+          className="paga-link"
           name="currentPage"
+          href="fake_url"
           onClick={() => this.handleChoosePage(eachButton.pageNumber)}
-          aria-controls="example1"
-          data-dt-idx={eachButton.pageNumber}
-          tabIndex={0}
         >
           {eachButton.pageNumber}
         </a>
@@ -118,30 +166,27 @@ class Invoice extends Component {
   };
 
   render() {
-    const { invoices, loading } = this.props.invoice;
-    const { select, totalDocuments, pages } = this.state;
+    const { select, totalDocuments } = this.state;
     const { isLoaded } = this.props;
     return (
       <Fragment>
         {!isLoaded ? (
           <Loader></Loader>
         ) : (
-            <React.Fragment>
+            <Fragment>
               {/* Content Header (Page header) */}
               <section className="content-header">
                 <h1>
-                  Invoice
+                  Parameter
                 {/* <small>Preview</small> */}
                 </h1>
                 <ol className="breadcrumb">
                   <li>
-                    <a href="fake_url">
+                    <Link to="/home">
                       <i className="fa fa-dashboard" /> Home
-                  </a>
+                  </Link>
                   </li>
-                  <li>
-                    <a href="fake_url">Invoice</a>
-                  </li>
+                  <li className="active">Parameter</li>
                 </ol>
               </section>
               {/* Main content */}
@@ -155,6 +200,10 @@ class Invoice extends Component {
                           style={{ paddingLeft: "5px" }}
                           className="col-md-8"
                         ></div>
+
+                        <div className="col-md-4">
+                          <ParameterModal />
+                        </div>
                       </div>
                       {/* /.box-header */}
                       <div className="box-body">
@@ -171,23 +220,7 @@ class Invoice extends Component {
                                 >
                                   <label>
                                     Show
-                                  <select
-                                      onChange={this.handleOnChange}
-                                      name="select"
-                                      aria-controls="example1"
-                                      style={{ margin: "0px 5px" }}
-                                      className="form-control input-sm"
-                                      value={this.state.select}
-                                    >
-                                      {this.state.sort.map(option => (
-                                        <option
-                                          key={option.value}
-                                          value={option.value}
-                                        >
-                                          {option.value}
-                                        </option>
-                                      ))}
-                                    </select>
+                                  {this.renderSelect()}
                                     entries
                                 </label>
                                 </div>
@@ -223,33 +256,21 @@ class Invoice extends Component {
                               >
                                 <thead>
                                   <tr>
-                                    <th style={{ width: "5%" }}>#</th>
-                                    <th style={{ width: "15%" }}>User</th>
-                                    <th style={{ width: "15%" }}>Member</th>
-                                    <th style={{ width: "10%" }}>Total</th>
-                                    <th style={{ width: "10%" }}>Created date</th>
-                                    <th style={{ width: "25%" }}>Discount</th>
+                                    <th style={{ width: "10%" }}>#</th>
+                                    <th style={{ width: "20%" }}>Max Point</th>
+                                    <th style={{ width: "20%" }}>System Discount (%)</th>
+                                    <th style={{ width: "20%" }}>Member Discount (%)</th>
+                                    <th style={{ width: "30%" }}>Action</th>
                                   </tr>
                                 </thead>
-                                <tbody>
-                                  {invoices.map((eachInvoice, index) => (
-                                    <InvoiceRow
-                                      onHandler={this.handler}
-                                      history={this.props.history}
-                                      key={eachInvoice._id}
-                                      Invoice={eachInvoice}
-                                      index={index}
-                                    />
-                                  ))}
-                                </tbody>
+                                <tbody>{this.renderParameters()}</tbody>
                                 <tfoot>
                                   <tr>
                                     <th>#</th>
-                                    <th>User</th>
-                                    <th>Member</th>
-                                    <th>Total</th>
-                                    <th>Created date</th>
-                                    <th>Discount</th>
+                                    <th>Max Point</th>
+                                    <th>System Discount(%)</th>
+                                    <th>Member Discount(%)</th>
+                                    <th>Action</th>
                                   </tr>
                                 </tfoot>
                               </table>
@@ -263,8 +284,8 @@ class Invoice extends Component {
                                 role="status"
                                 aria-live="polite"
                               >
-                                {/* Showing 1 to {select} of {totalDocuments} entries */}
-                              </div>
+                                Showing 1 to {select} of {totalDocuments} entries
+                            </div>
                             </div>
                             <div className="col-sm-7">
                               <div
@@ -275,33 +296,7 @@ class Invoice extends Component {
                                   className="pagination"
                                   style={{ float: "right" }}
                                 >
-                                  <li
-                                    className="paginate_button previous disabled"
-                                    id="example1_previous"
-                                  >
-                                    <a
-                                      href="fake_url"
-                                      aria-controls="example1"
-                                      data-dt-idx={0}
-                                      tabIndex={0}
-                                    >
-                                      Previous
-                                  </a>
-                                  </li>
                                   {this.renderPageButtons()}
-                                  <li
-                                    className="paginate_button next disabled"
-                                    id="example1_next"
-                                  >
-                                    <a
-                                      href="fake_url"
-                                      aria-controls="example2"
-                                      data-dt-idx={this.state.pages.length + 1}
-                                      tabIndex={0}
-                                    >
-                                      Next
-                                  </a>
-                                  </li>
                                 </ul>
                               </div>
                             </div>
@@ -315,23 +310,17 @@ class Invoice extends Component {
                 </div>
               </section>
               {/* /.content */}
-            </React.Fragment>
+            </Fragment>
           )}
       </Fragment>
     );
   }
 }
 
-Invoice.propTypes = {
-  getInvoices: PropTypes.func.isRequired,
-  invoice: PropTypes.object.isRequired
+Parameter.propTypes = {
+  getParameters: PropTypes.func.isRequired,
+  parameters: PropTypes.array.isRequired,
+  isLoaded: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = state => ({
-  invoice: state.invoice,
-  isLoaded: state.invoice.isLoaded
-});
-
-export default connect(mapStateToProps, { getInvoices, deleteInvoice })(
-  Invoice
-);
+export default connect(mapStateToProps, { getParameters })(Parameter);

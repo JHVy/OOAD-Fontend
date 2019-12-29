@@ -29,11 +29,9 @@ class InvoiceRow extends Component {
   };
 
   handleInactive = id => {
-    let Invoice = this.props;
-    const newInvoice = {
-      _id: Invoice._id,
-      status: 0
-    }
+
+    const newInvoice = Object.assign(this.props.Invoice)
+    newInvoice.status = 0
     this.props.updateInvoice(newInvoice);
   };
 
@@ -47,7 +45,7 @@ class InvoiceRow extends Component {
         <td>{Invoice.idMember.name}</td>
         <td>{Invoice.totalAmt}</td>
         <td>{this.convertDate(Invoice.createddate)}</td>
-        <td>{Invoice.comments}</td>
+        <td>{Invoice.discount}</td>
         <td>
           <div className="btn-group">
             <button
@@ -62,7 +60,7 @@ class InvoiceRow extends Component {
               onClick={() => this.handleInactive(Invoice._id)}
               type="button"
               className="btn btn-danger"
-              disabled={Invoice.status}
+              disabled={!Invoice.status}
             >
               Inactive
             </button>

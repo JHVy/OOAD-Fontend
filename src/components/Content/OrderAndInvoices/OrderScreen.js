@@ -6,6 +6,7 @@ import { getInvoices, addInvoice } from "../../../actions/invoiceActions";
 import { addInvoiceDet } from "../../../actions/invoicedetActions";
 import { getSearchMembers, getMembers } from "../../../actions/memberActions";
 import { getProducts, deleteProduct } from "../../../actions/productActions";
+import { getParameters } from "../../../actions/parameterActions";
 import { showNoti } from "../../../actions/notificationActions";
 import MemberModal from "../Member/MemberModal";
 import Select from "react-select";
@@ -30,22 +31,35 @@ class OrderScreen extends Component {
     comments: "",
     total: 0,
     inputQty: 0,
+    point: '',
     sort: [{ value: "5" }, { value: "10" }, { value: "20" }],
     select: "5",
     currentPage: 1,
     pages: [],
     totalDocuments: 0,
     query: "",
-
+    discount: 0,
+    isMemberDiscount: false,
     notiType: ""
   };
 
-  // onChangeSelectedUser = selectedUser => {
-  //   this.setState({ invisibleInpUserVal: selectedUser.value });
-  // };
+  tokenConfig = token => {
+    const config = {
+      headers: {
+        "Content-type": "application/json"
+      }
+    };
+    //Header
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+
+    return config;
+  };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     let { isLoaded, member, invoice } = this.props;
+    const { selectedMember, total } = this.state;
 
     if (prevProps.invoice.invoices !== this.props.invoice.invoices) {
       if (isLoaded === false) {
@@ -56,13 +70,32 @@ class OrderScreen extends Component {
         if (invoice.response === 200) {
           this.setState({ notiType: "success" });
 
+          const { parameters } = this.props.parameter;
+          //update member's points
+          let point = 0;
+          if (parameters[0].memberPointDiscount != 0) point = selectedMember.point + total * 5 / 1000 - 1000;
+          axios
+            .put(
+              `${process.env.REACT_APP_BACKEND_HOST}/api/member/point/${selectedMember.value}`,
+              {
+                _id: selectedMember.value,
+                point: point,
+              },
+              this.tokenConfig(this.props.auth.token)
+            )
+            .then(response => {
+              console.log(response.data);
+            })
+            .catch(error => {
+            });
+          //update member's points
+
           this.state.listOrder.map(el => {
             const newInvoiceDet = {
-              idInvoice: invoice.invoices[0]._id, //invoice.invoices[0]._id la id cura invoice vua dc them vao
+              idInvoice: invoice.invoices[0]._id, //invoice.invoices[0]._id la id cua invoice vua dc them vao
               idProduct: el._id,
               price: el.price,
               quantity: el.orderQty,
-              discount: "",
               _id: mongoose.Types.ObjectId()
             };
             this.props.addInvoiceDet(newInvoiceDet);
@@ -71,7 +104,7 @@ class OrderScreen extends Component {
           setTimeout(
             function () {
               //Start the timer
-              window.location.reload();
+              //window.location.reload();
             }.bind(this),
             500
           );
@@ -81,6 +114,16 @@ class OrderScreen extends Component {
       } else {
         return;
       }
+    }
+  }
+
+  onRadioChange = e => {
+    const { parameters } = this.props.parameter;
+
+    if (e.target.value === 'member') this.setState({ discount: parameters[0].memberPointDiscount })
+    else {
+
+      this.setState({ discount: parameters[0].systemDiscount })
     }
   }
 
@@ -100,6 +143,12 @@ class OrderScreen extends Component {
   };
 
   onChangeSelectedMember = selectedMember => {
+    const { parameters } = this.props.parameter
+
+    if (selectedMember.point >= Number(parameters[0].maxPoint)) {
+      this.setState({ isMemberDiscount: true })
+    }
+    this.setState({ point: selectedMember.point })
     this.setState({ selectedMember: selectedMember });
     this.setState({ invisibleInpMemVal: selectedMember.value });
   };
@@ -116,7 +165,8 @@ class OrderScreen extends Component {
       this.props.member.members.map(el => {
         listSelectMember.push({
           value: el._id,
-          label: el.name + " - " + el.phone
+          label: el.name + " - " + el.phone,
+          point: el.point
         });
       });
       return {
@@ -124,7 +174,6 @@ class OrderScreen extends Component {
       };
     });
   };
-
 
 
   handleInputQtyChange(e, productDet) {
@@ -233,17 +282,24 @@ class OrderScreen extends Component {
 
   onSubmit = e => {
     e.preventDefault();
+
+    const { selectedMember, total, comments, discount } = this.state;
+    //console.log(discount)
+    let temp = discount !== '' ? (total - total * discount / 100) : total;
+    this.setState({ total: temp });
+
     const newInvoice = {
-      idMember: this.state.selectedMember.value,
+      idMember: selectedMember.value,
       idUser: this.props.user._id,
-      totalAmt: this.state.total,
+      totalAmt: temp,
       createddate: new Date(),
-      comments: this.state.comments,
+      comments: comments,
       status: 1,
+      discount: discount,
       _id: mongoose.Types.ObjectId()
     };
 
-    if (this.state.total === 0) {
+    if (total === 0) {
       this.setState({ notiType: "warning-order" });
       return;
     }
@@ -267,9 +323,8 @@ class OrderScreen extends Component {
     this.getTotalDocuments();
     this.getPages();
     this.props.getProducts(select, currentPage, query);
-    //this.props.getMembers(select, currentPage, query);
+    this.props.getParameters(5, 1, '');
     this.props.getSearchMembers("");
-
   }
 
   getTotalDocuments = () => {
@@ -401,13 +456,15 @@ class OrderScreen extends Component {
   render() {
     const { products } = this.props.product;
     const { members } = this.props.member;
+    const { parameters } = this.props.parameter;
     const { isLoaded } = this.props;
     const {
-      invisibleInpUserVal,
       invisibleInpMemVal,
       listOrder,
       listSelectMember,
-      total
+      total,
+      point,
+      isMemberDiscount
     } = this.state;
 
     return (
@@ -525,9 +582,9 @@ class OrderScreen extends Component {
                         /> */}
                           <br />
                           <strong>
-                            <i className="fa fa-phone margin-r-5"></i> Customer
-                            phone
-                        </strong>
+                            <i className="fa fa-phone margin-r-5"></i>
+                            Customer phone
+                          </strong>
 
                           <Select
                             name="idMember"
@@ -546,15 +603,48 @@ class OrderScreen extends Component {
                           />
                           <br />
                           <strong>
+                            <i className="fa fa-star-o margin-r-5"></i>
+                            Point
+                          </strong>
+                          <input
+                            value={point}
+                            type="text"
+                            className="form-control"
+                            name="point"
+                            disabled
+                          ></input>
+                          <br />
+
+                          <strong>
+                            <i className="fa fa-sticky-note-o margin-r-5"></i>{" "}
+                            Choose discount
+                          </strong>
+                          <div className="form-group">
+                            <div className="radio">
+                              <label>
+                                <label />
+                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="member" onChange={this.onRadioChange} disabled={!isMemberDiscount} />
+                                Member's points
+                            </label>
+                            </div>
+                            <div className="radio">
+                              <label />
+                              <label>
+                                <input type="radio" name="optionsRadios" id="optionsRadios3" value="system" onChange={this.onRadioChange} disabled={!(parameters[0].systemDiscount != 0)} />
+                                {parameters[0].systemDiscount !== 0 ? parameters[0].systemDiscount + "% discount" : "No discount"}
+                              </label>
+                            </div>
+                          </div>
+
+                          <br />
+                          <strong>
                             <i className="fa fa-sticky-note-o margin-r-5"></i>{" "}
                             Notes
-                        </strong>
+                          </strong>
                           <input
-                            required
                             onChange={this.onChange}
                             type="text"
                             className="form-control"
-                            id="comments"
                             name="comments"
                             placeholder="Enter notes"
                           ></input>
@@ -727,16 +817,7 @@ class OrderScreen extends Component {
   }
 }
 
-class ListItem extends React.Component {
-  render() {
-    return (
-      <li className="list-group-item">
-        <b>{this.props.item.name} </b> x{this.props.item.orderQty}{" "}
-        <a className="pull-right">{this.props.item.price}</a>
-      </li>
-    );
-  }
-}
+
 
 OrderScreen.propTypes = {
   getProducts: PropTypes.func.isRequired,
@@ -753,7 +834,9 @@ const mapStateToProps = state => ({
   member: state.member,
   invoice: state.invoice,
   isLoaded: state.member.isLoaded,
-  user: state.auth.user
+  user: state.auth.user,
+  parameter: state.parameter,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {
@@ -764,6 +847,7 @@ export default connect(mapStateToProps, {
   addInvoice,
   addInvoiceDet,
   getInvoices,
+  getParameters,
   showNoti
 })(OrderScreen);
 

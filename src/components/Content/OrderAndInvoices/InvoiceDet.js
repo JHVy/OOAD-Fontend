@@ -122,7 +122,6 @@ class InvoiceEdit extends Component {
                               <th style={{ width: "15%" }}>Product</th>
                               <th style={{ width: "15%" }}>Price</th>
                               <th style={{ width: "10%" }}>Quantity</th>
-                              <th style={{ width: "5%" }}>Discount</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -140,7 +139,6 @@ class InvoiceEdit extends Component {
                               <th>Product</th>
                               <th>Price</th>
                               <th>Quantity</th>
-                              <th>Discount</th>
                             </tr>
                           </tfoot>
                         </table>

@@ -17,9 +17,7 @@ const mongoose = require("mongoose");
 class PaySlipModal extends Component {
   state = {
     _id: "",
-
     idSupplier: "",
-
     createddate: new Date(),
     totalAmt: 0,
     notiType: "",
@@ -124,7 +122,7 @@ class PaySlipModal extends Component {
     console.log(newItem);
 
     this.props.addPaySlip(newItem);
-    // Close modal
+
     document.getElementById("triggerButton").click();
   };
   onChangeSelectSupplier = event => {
@@ -151,6 +149,7 @@ class PaySlipModal extends Component {
         >
           Add new pay slip
         </button>
+
         {/* Modal */}
         <form onSubmit={this.onSubmit}>
           <div
@@ -194,11 +193,11 @@ class PaySlipModal extends Component {
                       type="text"
                       className="form-control"
                       id="username"
-                      placeholder="Add payslip"
+                      placeholder="Add user..."
                       name="username"
                       disabled
                       readOnly
-                      value={this.props.auth.user.fullName}
+                      value={this.props.auth.user.username}
                     />
                   </div>
                   <div className="form-group">
@@ -239,7 +238,7 @@ class PaySlipModal extends Component {
                       type="text"
                       className="form-control"
                       id="inputTotalAmt"
-                      placeholder="Loading..."
+                      placeholder="Add comments..."
                       value={comment}
                       onChange={this.onChange}
                     />

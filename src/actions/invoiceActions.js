@@ -77,13 +77,13 @@ export const updateInvoice = newInvoice => (dispatch, getState) => {
       console.log(error.response);
     });
 };
-export const getAllInvoices = query => dispatch => {
+export const getAllInvoices = query => (dispatch, getState) => {
   let newQuery = "";
   if (query === "") newQuery = "undefined";
   else newQuery = query;
 
   axios
-    .get(`${process.env.REACT_APP_BACKEND_HOST}/api/invoice/getall/${newQuery}`)
+    .get(`${process.env.REACT_APP_BACKEND_HOST}/api/invoice/getall/${newQuery}`, tokenConfig(getState))
     .then(response =>
       dispatch({ type: GET_ALL_INVOICES, payload: response.data })
     )

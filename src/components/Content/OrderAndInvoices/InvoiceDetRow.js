@@ -34,8 +34,6 @@ class InvoiceRow extends Component {
         <td>{det.idProduct.name}</td>
         <td>{det.price}</td>
         <td>{det.quantity}</td>
-        <td>0</td>
-
       </tr>
     );
   }

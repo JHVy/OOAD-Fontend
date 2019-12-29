@@ -109,6 +109,11 @@ class Menu extends Component {
                 </Link>
               </li>
               <li>
+                <Link to="/parameter">
+                  <i className="fa fa-th" /> <span>Parameter</span>
+                </Link>
+              </li>
+              <li>
                 <Link to="/help">
                   <i className="fa fa-th" /> <span>Help</span>
                   <span className="pull-right-container">

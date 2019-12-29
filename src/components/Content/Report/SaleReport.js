@@ -104,7 +104,7 @@ class SaleReport extends Component {
             data.push({ total: 0, month: i + 1, amt: 2400 });
           }
           this.props.invoice.invoices.map(el => {
-            if (new Date(el.createddate).getFullYear() == selectedYear) {
+            if (new Date(el.createddate).getFullYear() == selectedYear && el.status == 1) {
               let month = new Date(el.createddate).getMonth() + 1;
               switch (month) {
                 case 1:
@@ -165,7 +165,7 @@ class SaleReport extends Component {
         }
         this.props.invoice.invoices.map(el => {
           if (new Date(el.createddate).getFullYear() == selectedYear) {
-            if (new Date(el.createddate).getMonth() + 1 == selectedMonth) {
+            if (new Date(el.createddate).getMonth() + 1 == selectedMonth && el.status == 1) {
               let date = new Date(el.createddate).getDate();
 
               switch (date) {
@@ -239,22 +239,7 @@ class SaleReport extends Component {
                 {/* /.box-header */}
                 <div className="box-body">
                   <div className="box-body">
-                    <strong> Material</strong>
-                    <Select
-                      name="idMember"
-                      id="idMember"
-                      onMenuOpen={this.onMenuOpen}
-                      onChange={this.onChangeSelectedMaterial}
-                      isSearchable={true}
-                      options={options}
-                      placeholder="Select material..."
-                      required
-                    ></Select>
-                    {/* <input
-                                        style={{ opacity: 0, height: 0 }}
-                                         required
-                                        value={invisibleInpMemVal}
-                                        /> */}
+
                     <br />
 
                     <div style={container}>
